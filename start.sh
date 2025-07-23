@@ -1,34 +1,19 @@
 #!/bin/bash
 
+# Salir si hay errores
 set -e
 
-install_if_needed() {
-  dir=$1
-  echo "🚀 Instalando dependencias en $dir..."
-  cd "$dir" || { echo "No existe $dir"; exit 1; }
-  if [ ! -d "node_modules" ]; then
-    npm install
-  else
-    echo "Dependencias ya instaladas en $dir"
-  fi
-  cd - > /dev/null
-}
+# Colores para logs
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
 
-install_if_needed backend
-install_if_needed frontend
-
-echo "⚡️ Levantando backend (npm run dev) y frontend (npm start)..."
-
+echo -e "${GREEN}Iniciando backend...${NC}"
 cd backend
-npm run dev &
-BACKEND_PID=$!
+npm install
+npm run dev &  # Levanta el backend en segundo plano (por ejemplo con nodemon)
 
+echo -e "${GREEN}Iniciando frontend...${NC}"
 cd ../frontend
-npm start &
-FRONTEND_PID=$!
+npm install
+npx expo start
 
-echo "Backend PID: $BACKEND_PID"
-echo "Frontend PID: $FRONTEND_PID"
-
-wait $BACKEND_PID
-wait $FRONTEND_PID
