@@ -29,3 +29,5 @@ coverage/
 *.pid
 *.sqlite
 *.bak
+
+/src/generated/prisma

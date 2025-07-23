@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RutinaEstado {
+  ID          Int       @id @default(autoincrement())
+  descripcion String    @db.VarChar(30)
+  Rutinas     Rutina[]
+}
+
+model PasoEstado {
+  ID          Int     @id @default(autoincrement())
+  descripcion String  @db.VarChar(30)
+  Pasos       Paso[]
+}
+
+model RecordatorioFrecuencia {
+  ID           Int           @id @default(autoincrement())
+  descripcion  String        @db.VarChar(45)
+  Recordatorios Recordatorio[]
+}
+
+model UsuarioRol {
+  ID         Int       @id @default(autoincrement())
+  descripcion String   @db.VarChar(45)
+  Usuarios    Usuario[]
+}
+
+model UsuarioNivel {
+  ID        Int       @id @default(autoincrement())
+  descripcion String  @db.VarChar(45)
+  Infantes   Infante[]
+}
+
+model Usuario {
+  ID      Int      @id @default(autoincrement())
+  rolID   Int?
+  rol     UsuarioRol? @relation(fields: [rolID], references: [ID])
+  infante Infante?
+  adulto  Adulto?
+  rutinas Rutina[]
+}
+
+model Infante {
+  infanteID Int         @id
+  nivelID   Int?
+  nivel     UsuarioNivel? @relation(fields: [nivelID], references: [ID])
+  usuario   Usuario     @relation(fields: [infanteID], references: [ID])
+}
+
+model Adulto {
+  adultoID Int     @id
+  pin      Int?
+  usuario  Usuario @relation(fields: [adultoID], references: [ID])
+}
+
+model Rutina {
+  ID              Int              @id @default(autoincrement())
+  nombre          String           @db.VarChar(50)
+  estadoID        Int?
+  estado          RutinaEstado?   @relation(fields: [estadoID], references: [ID])
+  fechaCreacion   DateTime?
+  imagen          String?
+  usuarioID       Int?
+  usuario         Usuario?         @relation(fields: [usuarioID], references: [ID])
+  pasos           Paso[]
+  motivaciones    Motivacion[]
+  cancelaciones   Cancelacion[]
+  diaHoraActivaciones DiaHoraActivacion[]
+  recordatorios   Recordatorio[]
+}
+
+model Paso {
+  ID         Int         @id @default(autoincrement())
+  orden      Int?
+  descripcion String?     @db.VarChar(70)
+  estadoID   Int?
+  estado     PasoEstado? @relation(fields: [estadoID], references: [ID])
+  imagen     String?
+  audio      String?
+  rutinaID   Int?
+  rutina     Rutina?     @relation(fields: [rutinaID], references: [ID])
+}
+
+model Motivacion {
+  ID            Int       @id @default(autoincrement())
+  icono         String?
+  descripcion   String?   @db.VarChar(200)
+  fechaObtencion DateTime?
+  rutinaID      Int?
+  rutina        Rutina?   @relation(fields: [rutinaID], references: [ID])
+}
+
+model Cancelacion {
+  ID         Int       @id @default(autoincrement())
+  fechaHora  DateTime?
+  rutinaID   Int?
+  rutina     Rutina?   @relation(fields: [rutinaID], references: [ID])
+}
+
+model DiaHoraActivacion {
+  ID             Int       @id @default(autoincrement())
+  diaSemana      String?   @db.VarChar(20)
+  horaActivacion DateTime?
+  rutinaID       Int?
+  rutina         Rutina?   @relation(fields: [rutinaID], references: [ID])
+}
+
+model Recordatorio {
+  ID           Int       @id @default(autoincrement())
+  descripcion  String    @db.VarChar(100)
+  frecuenciaID Int?
+  frecuencia   RecordatorioFrecuencia? @relation(fields: [frecuenciaID], references: [ID])
+  hora         DateTime?
+  diaSemana    String?   @db.VarChar(30)
+  sonido       String?
+  color        String?   @db.VarChar(45)
+  rutinaID     Int?
+  rutina       Rutina?   @relation(fields: [rutinaID], references: [ID])
+}
