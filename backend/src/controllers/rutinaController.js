@@ -1,49 +1,44 @@
-const prisma = require('../models/prismaClient');
+const rutinaService = require('../services/rutinaService')
 
-async function crearRutina(req, res) {
+const crearRutina = async (req, res) => {
   try {
-    const { titulo, activaDesde, activaHasta, pasos } = req.body; //PASO SE CREA A PARTE Y SE AÑADE DESPUES
+    const { nombre, descripcion, imagen, pasos, diaHoraActivacion } = req.body
+    const userId = req.user?.id // Suponiendo que el middleware de auth ya adjuntó el usuario
 
-    // Validación: máximo 4 pasos
-    if (pasos.length > 4) {
-      return res.status(400).json({ error: 'Una rutina no puede tener más de 4 pasos.' });
+    // Validaciones superficiales
+    if (!nombre || !descripcion || !imagen) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' })
     }
 
-    // Validación: máximo 5 rutinas activas
-    const rutinasActivas = await prisma.rutina.count({
-      where: { estado: 'ACTIVA' }
-    });
-
-    if (rutinasActivas >= 5) {
-      return res.status(400).json({ error: 'Ya hay 5 rutinas activas.' });
+    if (!Array.isArray(pasos) || pasos.length === 0) {
+      return res.status(400).json({ error: 'Debe haber al menos un paso' })
     }
 
-    // Crear rutina
-    const nuevaRutina = await prisma.rutina.create({
-      data: {
-        titulo,
-        activaDesde: activaDesde ? new Date(activaDesde) : null,
-        activaHasta: activaHasta ? new Date(activaHasta) : null,
-        pasos: {
-          create: pasos.map((paso, index) => ({
-            descripcion: paso.descripcion,
-            imagenUrl: paso.imagenUrl,
-            orden: index + 1
-          }))
-        }
-      },
-      include: {
-        pasos: true
-      }
-    });
+    if (!Array.isArray(diaHoraActivacion) || diaHoraActivacion.length === 0) {
+      return res.status(400).json({ error: 'Debe haber al menos una programación de día y hora' })
+    }
 
-    return res.status(201).json(nuevaRutina);
+    if (!userId) {
+      return res.status(401).json({ error: 'No autorizado. Usuario no identificado.' })
+    }
+
+    // Delegamos la lógica a la capa de servicio
+    const rutinaCreada = await rutinaService.crearRutinaConTodo({
+      nombre,
+      descripcion,
+      imagen,
+      pasos,
+      diaHoraActivacion,
+      userId
+    })
+
+    return res.status(201).json(rutinaCreada)
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error al crear la rutina.' });
+    console.error('Error al crear rutina:', error)
+    return res.status(500).json({ error: 'Error interno del servidor' })
   }
 }
 
 module.exports = {
   crearRutina
-};
+}
