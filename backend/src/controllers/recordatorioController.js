@@ -39,6 +39,44 @@ class RecordatorioController {
       return res.status(500).json({ error: 'Error interno del servidor' })
     }
   }
+
+  async editarRecordatorio(req, res) {
+    try {
+      const recordatorioID = parseInt(req.params.id)
+      const {
+        descripcion,
+        frecuenciaID,
+        hora,
+        diaSemana,
+        sonido,
+        color,
+      } = req.body
+
+      if (!recordatorioID || isNaN(recordatorioID)) {
+        return res.status(400).json({ error: 'ID de recordatorio inválido' })
+      }
+
+      const datosActualizados = {
+        descripcion,
+        frecuenciaID,
+        hora,
+        diaSemana,
+        sonido,
+        color,
+      }
+
+      const recordatorioEditado = await this.recordatorioService.editarRecordatorio(
+        recordatorioID,
+        datosActualizados
+      )
+
+      return res.status(200).json(recordatorioEditado)
+    } catch (error) {
+      console.error('Error al editar recordatorio:', error)
+      return res.status(500).json({ error: 'Error interno del servidor' })
+    }
+  }
+  
 }
 
 export default new RecordatorioController()
