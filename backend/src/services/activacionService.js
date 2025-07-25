@@ -11,7 +11,9 @@ class ActivacionService {
             data: {
               diaSemana,
               horaActivacion: new Date(horaActivacion),
-              rutinaId,
+              rutina: {
+                connect: { ID: rutinaId },
+              },
             },
           })
         )
@@ -23,6 +25,40 @@ class ActivacionService {
       throw new Error('No se pudieron crear las activaciones')
     }
   }
+
+  async editarActivaciones(activaciones = [], rutinaId) {
+    if (!Array.isArray(activaciones)) throw new Error('Activaciones debe ser un arreglo')
+
+    try {
+      // Borro todas las activaciones asociadas a la rutina
+      await prisma.diaHoraActivacion.deleteMany({
+        where: {
+          rutinaID: rutinaId,
+        },
+      })
+
+      // Creo las nuevas activaciones
+      const activacionesActualizadas = await Promise.all(
+        activaciones.map(({ diaSemana, horaActivacion }) =>
+          prisma.diaHoraActivacion.create({
+            data: {
+              diaSemana,
+              horaActivacion: new Date(horaActivacion),
+              rutina: {
+                connect: { ID: rutinaId },
+              },
+            },
+          })
+        )
+      )
+
+      return activacionesActualizadas
+    } catch (error) {
+      console.error('Error al editar activaciones:', error)
+      throw new Error('No se pudieron editar las activaciones')
+    }
+  }
+  
 }
 
 export default new ActivacionService()

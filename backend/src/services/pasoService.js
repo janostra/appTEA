@@ -14,7 +14,9 @@ class PasoService {
               estadoID,
               imagen,
               audio,
-              rutinaId,
+              rutina: {
+                connect: { ID: rutinaId },
+              },
             },
           })
         )
@@ -24,6 +26,42 @@ class PasoService {
     } catch (error) {
       console.error('Error al crear pasos:', error)
       throw new Error('No se pudieron crear los pasos')
+    }
+  }
+
+   async editarPasos(pasos = [], rutinaId) {
+    if (!Array.isArray(pasos)) throw new Error('Pasos debe ser un arreglo')
+
+    try {
+      // Borro todos los pasos que pertenecen a la rutina
+      await prisma.paso.deleteMany({
+        where: {
+          rutinaID: rutinaId,
+        },
+      })
+
+      // Creo los pasos nuevos
+      const pasosActualizados = await Promise.all(
+        pasos.map(({ orden, descripcion, estadoID, imagen, audio }) =>
+          prisma.paso.create({
+            data: {
+              orden,
+              descripcion,
+              estadoID,
+              imagen,
+              audio,
+              rutina: {
+                connect: { ID: rutinaId },
+              },
+            },
+          })
+        )
+      )
+
+      return pasosActualizados
+    } catch (error) {
+      console.error('Error al editar pasos:', error)
+      throw new Error('No se pudieron editar los pasos')
     }
   }
 }

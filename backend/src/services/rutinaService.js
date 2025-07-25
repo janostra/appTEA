@@ -23,6 +23,39 @@ class RutinaService {
       throw new Error('No se pudo crear la rutina')
     }
   }
+
+      async editarRutina(rutinaId, { nombre, imagen }) {
+    if (!rutinaId) {
+      throw new Error('Debe proporcionar el ID de la rutina')
+    }
+
+    try {
+      // Obtener la rutina actual
+      const rutinaExistente = await prisma.rutina.findUnique({
+        where: { ID: rutinaId },
+      })
+
+      if (!rutinaExistente) {
+        throw new Error('La rutina no existe')
+      }
+
+      // Usar los valores nuevos si vienen, si no, mantener los actuales
+      const rutinaActualizada = await prisma.rutina.update({
+        where: { ID: rutinaId },
+        data: {
+          nombre: nombre ?? rutinaExistente.nombre,
+          imagen: imagen ?? rutinaExistente.imagen
+        },
+      })
+
+      return rutinaActualizada
+    } catch (error) {
+      console.error('Error al editar la rutina:', error)
+      throw new Error('No se pudo editar la rutina')
+    }
+  }
+
+
 }
 
 export default new RutinaService()
