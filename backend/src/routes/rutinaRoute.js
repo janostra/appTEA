@@ -1,9 +1,18 @@
-// routes/rutinas.js
-const express = require('express')
-const RutinaController = require('../controllers/rutinaController.js')
+import { Router } from 'express'
+import RutinaController from '../controllers/rutinaController.js'
 
-const router = express.Router()
+const router = Router()
 
-router.post('/', RutinaController.crearRutina)
+router.post('/rutinas', (req, res) =>
+  RutinaController.crearRutina(req, res)
+)
 
-module.exports = router
+router.put('/rutinas/:id', (req, res) =>
+  RutinaController.editarRutina(req, res)
+)
+
+router.get('/rutinas', (req, res) =>
+  RutinaController.obtenerRutinasPorUsuario(req, res)
+)
+
+export default router
