@@ -55,6 +55,33 @@ class RutinaService {
     }
   }
 
+  async getRutinasPorUsuario(userId) {
+  if (!userId) {
+    throw new Error('Debe proporcionar el ID del usuario')
+  }
+
+  try {
+    const rutinas = await prisma.rutina.findMany({
+      where: {
+        usuarioID: userId
+      },
+      include: {
+        pasos: true,
+        estado: true
+      },
+      orderBy: {
+        fechaCreacion: 'desc'
+      }
+    })
+
+    return rutinas
+  } catch (error) {
+    console.error('Error al obtener rutinas del usuario:', error)
+    throw new Error('No se pudieron obtener las rutinas del usuario')
+  }
+}
+
+
 
 }
 

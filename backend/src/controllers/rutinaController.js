@@ -56,6 +56,7 @@ class RutinaController {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
       const userId = req.user?.id
       const rutinaID = req.params.id  // Asumo que el ID viene por params
+      const { nombre, imagen } = rutinaData
 
       if (!rutinaID) {
         return res.status(400).json({ error: 'Falta el ID de la rutina' })
@@ -99,6 +100,22 @@ class RutinaController {
     } catch (error) {
       console.error('Error al editar rutina:', error)
       return res.status(500).json({ error: 'Error interno del servidor' })
+    }
+  }
+
+    async obtenerRutinasPorUsuario(req, res) {
+    try {
+      const userId = req.user?.id
+
+      if (!userId) {
+        return res.status(400).json({ error: 'Falta el userId' })
+      }
+
+      const rutinas = await rutinaService.getRutinasPorUsuario(userId)
+      res.json(rutinas)
+    } catch (error) {
+      console.error('Error en obtenerRutinasPorUsuario:', error)
+      res.status(500).json({ error: 'No se pudieron obtener las rutinas' })
     }
   }
 
