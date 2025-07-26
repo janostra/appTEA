@@ -1,4 +1,4 @@
-import  prisma  from '../config/prismaClient.js'
+import prisma  from '../../prisma/client.js'
 
 export class RecordatorioService {
   async crearRecordatorio({
@@ -106,3 +106,5 @@ export class RecordatorioService {
     }
   }
 }
+
+export default new RecordatorioService()

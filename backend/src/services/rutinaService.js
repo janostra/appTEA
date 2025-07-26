@@ -1,4 +1,4 @@
-import prisma from '../prisma/client.js'
+import prisma  from '../../prisma/client.js'
 
 class RutinaService {
   async crearRutina({ nombre, imagen, userId }) {

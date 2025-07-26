@@ -1,8 +1,8 @@
 import express from 'express'
-import rutinaRoutes from './routes/rutina.routes.js'
-import cancelacionRoutes from './routes/cancelacion.routes.js'
-import recordatorioRoutes from './routes/recordatorio.routes.js'
-import usuarioRoutes from './routes/usuario.routes.js'
+import rutinaRoutes from './routes/rutinaRoute.js'
+import cancelacionRoutes from './routes/cancelacionRoute.js'
+import recordatorioRoutes from './routes/recordatorioRoute.js'
+import usuarioRoutes from './routes/usuarioRoute.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000

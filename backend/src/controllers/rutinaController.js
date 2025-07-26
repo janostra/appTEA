@@ -1,4 +1,4 @@
-import rutinaService from '../services/rutinaService'
+import rutinaService from '../services/rutinaService.js'
 import PasoService from '../services/pasoService.js'
 import ActivacionService from '../services/activacionService.js'
 import MotivacionService from '../services/motivacionService.js'
@@ -121,4 +121,4 @@ class RutinaController {
 
 }
 
-module.exports = new RutinaController()
+export default new RutinaController()

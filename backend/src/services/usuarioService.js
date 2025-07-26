@@ -1,4 +1,4 @@
-import prisma from '../config/prismaClient.js'
+import prisma  from '../../prisma/client.js'
 
 export class UsuarioService {
     async crearUsuario({ pin }) {

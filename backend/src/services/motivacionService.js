@@ -1,4 +1,4 @@
-const  prisma  = require('@prisma/client');
+import prisma  from '../../prisma/client.js'
 
 class MotivacionService {
   async crear(motivacionData, rutinaID) {
