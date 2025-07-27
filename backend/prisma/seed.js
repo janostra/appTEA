@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   // RutinaEstado
-  const rutinaEstados = ['Activa', 'Inactiva', 'Pausada']
+  const rutinaEstados = ['Activa', 'Completada', 'Oculta', 'Cancelada']
   for (const descripcion of rutinaEstados) {
     await prisma.rutinaEstado.upsert({
       where: { descripcion },
@@ -14,7 +14,7 @@ async function main() {
   }
 
   // PasoEstado
-  const pasoEstados = ['Pendiente', 'Completado', 'Cancelado']
+  const pasoEstados = ['Pendiente', 'Completado', 'Oculto']
   for (const descripcion of pasoEstados) {
     await prisma.pasoEstado.upsert({
       where: { descripcion },
@@ -34,7 +34,7 @@ async function main() {
   }
 
   // UsuarioRol
-  const roles = ['Adulto', 'Infante', 'Administrador']
+  const roles = ['Adulto', 'Infante']
   for (const descripcion of roles) {
     await prisma.usuarioRol.upsert({
       where: { descripcion },

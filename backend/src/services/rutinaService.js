@@ -1,4 +1,4 @@
-import prisma  from '../../prisma/client.js'
+import prisma from '../../prisma/client.js'
 
 class RutinaService {
   async crearRutina({ nombre, imagen, userId }) {
@@ -24,7 +24,7 @@ class RutinaService {
     }
   }
 
-      async editarRutina(rutinaId, { nombre, imagen }) {
+  async editarRutina(rutinaId, { nombre, imagen }) {
     if (!rutinaId) {
       throw new Error('Debe proporcionar el ID de la rutina')
     }
@@ -56,32 +56,50 @@ class RutinaService {
   }
 
   async getRutinasPorUsuario(userId) {
-  if (!userId) {
-    throw new Error('Debe proporcionar el ID del usuario')
+    if (!userId) {
+      throw new Error('Debe proporcionar el ID del usuario')
+    }
+
+    try {
+      const rutinas = await prisma.rutina.findMany({
+        where: {
+          usuarioID: userId
+        },
+        include: {
+          pasos: true,
+          estado: true
+        },
+        orderBy: {
+          fechaCreacion: 'desc'
+        }
+      })
+
+      return rutinas
+    } catch (error) {
+      console.error('Error al obtener rutinas del usuario:', error)
+      throw new Error('No se pudieron obtener las rutinas del usuario')
+    }
   }
 
-  try {
-    const rutinas = await prisma.rutina.findMany({
-      where: {
-        usuarioID: userId
-      },
-      include: {
-        pasos: true,
-        estado: true
-      },
-      orderBy: {
-        fechaCreacion: 'desc'
-      }
+
+  async ocultarRutina(rutinaID, userID) {
+    // Validar que la rutina exista y le pertenezca al usuario
+    const rutina = await prisma.rutina.findUnique({
+      where: { id: rutinaID }
     })
 
-    return rutinas
-  } catch (error) {
-    console.error('Error al obtener rutinas del usuario:', error)
-    throw new Error('No se pudieron obtener las rutinas del usuario')
+    if (!rutina || rutina.usuarioID !== userID) {
+      throw new Error('Rutina no encontrada o no autorizada')
+    }
+
+    // Asumiendo que el estado "Oculta" tiene ID = 3
+    return prisma.rutina.update({
+      where: { id: rutinaID },
+      data: {
+        estadoID: 3  // O el ID real de "Oculta"
+      }
+    })
   }
-}
-
-
 
 }
 

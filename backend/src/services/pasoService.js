@@ -1,4 +1,4 @@
-import prisma  from '../../prisma/client.js'
+import prisma from '../../prisma/client.js'
 
 class PasoService {
   async crearPasos(pasos = [], rutinaId) {
@@ -29,7 +29,7 @@ class PasoService {
     }
   }
 
-   async editarPasos(pasos = [], rutinaId) {
+  async editarPasos(pasos = [], rutinaId) {
     if (!Array.isArray(pasos)) throw new Error('Pasos debe ser un arreglo')
 
     try {
@@ -64,6 +64,21 @@ class PasoService {
       throw new Error('No se pudieron editar los pasos')
     }
   }
+
+  async ocultarPaso(pasoId) {
+    try {
+      const pasoActualizado = await prisma.paso.update({
+        where: { ID: pasoId },
+        data: { visible: false },
+      })
+
+      return pasoActualizado
+    } catch (error) {
+      console.error('Error al ocultar el paso:', error)
+      throw new Error('No se pudo ocultar el paso')
+    }
+  }
+
 }
 
 export default new PasoService()

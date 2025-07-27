@@ -15,4 +15,10 @@ router.get('/rutinas', (req, res) =>
   RutinaController.obtenerRutinasPorUsuario(req, res)
 )
 
+router.patch('/:id/ocultar', RutinaController.ocultarRutina)
+
+
+router.patch('/pasos/:id/ocultar', RutinaController.ocultarPaso)
+
+
 export default router

@@ -33,7 +33,7 @@ class RutinaController {
       let activacionesCreadas = []
       if (activaciones && Array.isArray(activaciones)) {
         activacionesCreadas = await ActivacionService.crearActivaciones(activaciones, rutinaID)
-      }
+      } ººº
 
       const pasosCreados = await PasoService.crearPasos(pasos, rutinaID)
 
@@ -51,7 +51,7 @@ class RutinaController {
     }
   }
 
-   async editarRutina(req, res) {
+  async editarRutina(req, res) {
     try {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
       const userId = req.user?.id
@@ -103,7 +103,7 @@ class RutinaController {
     }
   }
 
-    async obtenerRutinasPorUsuario(req, res) {
+  async obtenerRutinasPorUsuario(req, res) {
     try {
       const userId = req.user?.id
 
@@ -116,6 +116,39 @@ class RutinaController {
     } catch (error) {
       console.error('Error en obtenerRutinasPorUsuario:', error)
       res.status(500).json({ error: 'No se pudieron obtener las rutinas' })
+    }
+  }
+
+  async ocultarRutina(req, res) {
+    try {
+      const rutinaID = parseInt(req.params.id)
+      const userID = req.user?.id
+
+      if (!userID) {
+        return res.status(401).json({ error: 'No autorizado' })
+      }
+
+      if (!rutinaID) {
+        return res.status(400).json({ error: 'ID de rutina inválido' })
+      }
+
+      const rutinaOcultada = await rutinaService.ocultarRutina(rutinaID, userID)
+
+      res.status(200).json({ message: 'Rutina ocultada correctamente', rutina: rutinaOcultada })
+    } catch (error) {
+      console.error('Error al ocultar rutina:', error)
+      res.status(500).json({ error: 'No se pudo ocultar la rutina' })
+    }
+  }
+
+  async ocultarPaso(req, res) {
+    const { id } = req.params
+
+    try {
+      const paso = await pasoService.ocultarPaso(parseInt(id))
+      res.status(200).json(paso)
+    } catch (error) {
+      res.status(500).json({ mensaje: error.message })
     }
   }
 
