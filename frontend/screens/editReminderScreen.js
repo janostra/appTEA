@@ -29,7 +29,7 @@ export default function EditReminderScreen({ route, navigation }) {
         const r = res.data;
         setDescription(r.descripcion || '');
         setRoutine(r.rutinaId || '');
-        setFrequency(r.frecuencia || ''); // Ahora usamos directamente el valor enum (DIARIO, SEMANAL, etc.)
+        setFrequency(r.frecuencia || '');
         setDay(r.diaSemana || '');
         setTime(new Date(r.hora));
         setColor(r.color || '#3498db');

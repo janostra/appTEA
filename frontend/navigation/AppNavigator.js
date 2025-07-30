@@ -6,6 +6,8 @@ import AdultHomeScreen from '../screens/AdultHomeScreen';
 import ChildHomeScreen from '../screens/ChildHomeScreen';
 import RutinaScreen from '../screens/RutinaScreen';
 import PerfilScreen from '../screens/PerfilScreen';
+import AddReminderScreen from '../screens/addReminderScreen'
+import EditReminderScreen from '../screens/editReminderScreen'
 import { AuthContext } from '../context/AuthContext';
 
 const Stack = createStackNavigator();
@@ -24,6 +26,7 @@ const AppNavigator = () => {
             <Stack.Screen name="ChildHome" component={ChildHomeScreen} />
             <Stack.Screen name="Rutina" component={RutinaScreen} />
             <Stack.Screen name="Perfil" component={PerfilScreen} />
+            <Stack.Screen name="Recordatorio" component={AddReminderScreen}/>
           </>
         )}
       </Stack.Navigator>
