@@ -1,4 +1,3 @@
-// app/(tabs)/_layout.tsx
 import { Redirect, Slot } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 

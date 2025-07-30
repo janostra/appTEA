@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import React from 'react';
 import { Slot } from 'expo-router';
 import { AuthProvider } from '../context/AuthContext';
