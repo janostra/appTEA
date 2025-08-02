@@ -1,57 +1,31 @@
 import { PrismaClient } from '@prisma/client'
-
 const prisma = new PrismaClient()
 
+async function crearSiNoExiste(modelo, descripcion) {
+  const existe = await prisma[modelo].findFirst({
+    where: { descripcion }
+  })
+
+  if (!existe) {
+    await prisma[modelo].create({ data: { descripcion } })
+  }
+}
+
 async function main() {
-  // RutinaEstado
   const rutinaEstados = ['Activa', 'Completada', 'Oculta', 'Cancelada']
-  for (const descripcion of rutinaEstados) {
-    await prisma.rutinaEstado.upsert({
-      where: { descripcion },
-      update: {},
-      create: { descripcion }
-    })
-  }
+  for (const desc of rutinaEstados) await crearSiNoExiste('rutinaEstado', desc)
 
-  // PasoEstado
   const pasoEstados = ['Pendiente', 'Completado', 'Oculto']
-  for (const descripcion of pasoEstados) {
-    await prisma.pasoEstado.upsert({
-      where: { descripcion },
-      update: {},
-      create: { descripcion }
-    })
-  }
+  for (const desc of pasoEstados) await crearSiNoExiste('pasoEstado', desc)
 
-  // RecordatorioFrecuencia
   const frecuencias = ['Diario', 'Semanal', 'Mensual']
-  for (const descripcion of frecuencias) {
-    await prisma.recordatorioFrecuencia.upsert({
-      where: { descripcion },
-      update: {},
-      create: { descripcion }
-    })
-  }
+  for (const desc of frecuencias) await crearSiNoExiste('recordatorioFrecuencia', desc)
 
-  // UsuarioRol
   const roles = ['Adulto', 'Infante']
-  for (const descripcion of roles) {
-    await prisma.usuarioRol.upsert({
-      where: { descripcion },
-      update: {},
-      create: { descripcion }
-    })
-  }
+  for (const desc of roles) await crearSiNoExiste('usuarioRol', desc)
 
-  // UsuarioNivel
   const niveles = ['Básico', 'Intermedio', 'Avanzado']
-  for (const descripcion of niveles) {
-    await prisma.usuarioNivel.upsert({
-      where: { descripcion },
-      update: {},
-      create: { descripcion }
-    })
-  }
+  for (const desc of niveles) await crearSiNoExiste('usuarioNivel', desc)
 
   console.log('Seed ejecutado correctamente ✅')
 }
