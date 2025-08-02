@@ -6,7 +6,11 @@ import AdultHomeScreen from '../screens/AdultHomeScreen.tsx';
 import ChildHomeScreen from '../screens/ChildHomeScreen.tsx';
 import RutinaScreen from '../screens/RutinaScreen';
 import PerfilScreen from '../screens/PerfilScreen';
+<<<<<<< HEAD
 import AddReminderScreen from '../screens/addReminderScreen.tsx'
+=======
+import AddReminderScreen from '../screens/addReminderScreen'
+>>>>>>> 836f31cfd9885fc3bc6e6457e252fbcdfa6f2b6b
 import EditReminderScreen from '../screens/editReminderScreen'
 import { AuthContext } from '../context/AuthContext';
 

@@ -27,7 +27,7 @@ export default function TabsHomeScreen() {
       case 'rutinas':
         if (isAdult) {
           // Adulto ve creación de rutinas
-          router.push('/(tabs)/explore');
+          router.push('/(tabs)/crearRutina');
         } else {
           // Niño ve sus rutinas activas
           alert('Funcionalidad de Rutinas del Niño - Usar React Navigation');
