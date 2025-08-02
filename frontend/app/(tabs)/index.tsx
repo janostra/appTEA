@@ -1,75 +1,206 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import { useRouter } from 'expo-router';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function TabsHomeScreen() {
+  const { user, logout, isAdult, isChild } = useAuth();
+  const router = useRouter();
 
-export default function HomeScreen() {
+  const handleNavigation = (screen: string) => {
+    switch (screen) {
+      case 'infantes':
+        if (isAdult) {
+          // Adulto ve gestión de infantes
+          alert('Funcionalidad de Gestión de Infantes - Usar React Navigation');
+        } else {
+          alert('Esta función solo está disponible para adultos');
+        }
+        break;
+      case 'recordatorios':
+        if (isAdult) {
+          router.push('/(tabs)/addReminder');
+        } else {
+          alert('Esta función solo está disponible para adultos');
+        }
+        break;
+      case 'rutinas':
+        if (isAdult) {
+          // Adulto ve creación de rutinas
+          router.push('/(tabs)/explore');
+        } else {
+          // Niño ve sus rutinas activas
+          alert('Funcionalidad de Rutinas del Niño - Usar React Navigation');
+        }
+        break;
+      case 'perfil':
+        // Ambos roles pueden ver perfil
+        alert('Funcionalidad de Perfil - Usar React Navigation');
+        break;
+    }
+  };
+
+  const getWelcomeMessage = () => {
+    if (isChild) {
+      return `¡Hola, ${user?.name || 'Niño'}!`;
+    } else {
+      return `¡Hola, ${user?.name || 'Adulto'}!`;
+    }
+  };
+
+  const getSubtitle = () => {
+    if (isChild) {
+      return '¿Qué rutina quieres hacer hoy?';
+    } else {
+      return '¿Qué quieres gestionar hoy?';
+    }
+  };
+
+  const getButtonsForRole = () => {
+    if (isChild) {
+      return [
+        {
+          icon: '📋',
+          title: 'Mis Rutinas',
+          subtitle: 'Ver rutinas activas',
+          action: 'rutinas'
+        },
+        {
+          icon: '👤',
+          title: 'Mi Perfil',
+          subtitle: 'Configuración',
+          action: 'perfil'
+        }
+      ];
+    } else {
+      return [
+        {
+          icon: '👶',
+          title: 'Infantes',
+          subtitle: 'Gestionar infantes',
+          action: 'infantes'
+        },
+        {
+          icon: '⏰',
+          title: 'Recordatorios',
+          subtitle: 'Crear recordatorios',
+          action: 'recordatorios'
+        },
+        {
+          icon: '📋',
+          title: 'Rutinas',
+          subtitle: 'Crear rutinas',
+          action: 'rutinas'
+        },
+        {
+          icon: '👤',
+          title: 'Perfil',
+          subtitle: 'Configuración',
+          action: 'perfil'
+        }
+      ];
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.welcome}>{getWelcomeMessage()}</Text>
+        <Text style={styles.subtitle}>{getSubtitle()}</Text>
+
+        <View style={styles.buttonGrid}>
+          {getButtonsForRole().map((button, index) => (
+            <TouchableOpacity 
+              key={index}
+              style={styles.button} 
+              onPress={() => handleNavigation(button.action)}
+            >
+              <Text style={styles.buttonIcon}>{button.icon}</Text>
+              <Text style={styles.buttonText}>{button.title}</Text>
+              <Text style={styles.buttonSubtext}>{button.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, styles.logout]}
+          onPress={() => {
+            logout();
+            router.replace('/login');
+          }}
+        >
+          <Text style={styles.buttonText}>🚪 Cerrar sesión</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: { 
+    flex: 1, 
+    backgroundColor: '#f5f5f5'
   },
-  stepContainer: {
-    gap: 8,
+  content: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 60,
+  },
+  welcome: { 
+    fontSize: 28, 
+    marginBottom: 10, 
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center'
+  },
+  subtitle: { 
+    fontSize: 18, 
+    marginBottom: 30, 
+    color: '#666',
+    textAlign: 'center'
+  },
+  buttonGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: '#fff',
+    width: '48%',
+    paddingVertical: 20,
+    borderRadius: 15,
+    marginBottom: 15,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  buttonIcon: {
+    fontSize: 32,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  buttonText: { 
+    color: '#333', 
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  buttonSubtext: {
+    color: '#666',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  logout: { 
+    backgroundColor: '#d9534f',
+    width: '100%',
+    paddingVertical: 15,
   },
 });
