@@ -180,13 +180,13 @@ export default function CrearRutinaScreen() {
         {/* Botones de acción */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity 
-            style={[styles.actionButton, styles.motivationButton]}
-            activeOpacity={0.8}
+          style={[styles.actionButton, styles.motivationButton]}
+          activeOpacity={0.8}
+          onPress={() => router.push('/elegirMotivacion')}
           >
-            <Ionicons name="sparkles" size={20} color="#fff" />
-            <Text style={styles.actionButtonText}>Motivación</Text>
-          </TouchableOpacity>
-
+          <Ionicons name="sparkles" size={20} color="#fff" />
+          <Text style={styles.actionButtonText}>Motivación</Text>
+        </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.actionButton, styles.primaryButton]}
             onPress={() => router.push('/crearPaso')}
