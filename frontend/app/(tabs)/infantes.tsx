@@ -1,6 +1,6 @@
-import AdultHomeScreen from '../../screens/AdultHomeScreen';
+import ChildHomeScreen from '../../screens/ChildHomeScreen';
 
-export default AdultHomeScreen;
+export default ChildHomeScreen;
 
 export const options = {
   title: 'Infantes',
