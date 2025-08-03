@@ -11,9 +11,11 @@ class PasoService {
             data: {
               orden,
               descripcion,
-              estadoID,
               imagen,
               audio,
+              estado: {
+                connect: { ID: estadoID }
+              },
               rutina: {
                 connect: { ID: rutinaId },
               },
@@ -47,7 +49,9 @@ class PasoService {
             data: {
               orden,
               descripcion,
-              estadoID,
+              estado: {
+                connect: { ID: estadoID }
+              },
               imagen,
               audio,
               rutina: {
@@ -69,7 +73,9 @@ class PasoService {
     try {
       const pasoActualizado = await prisma.paso.update({
         where: { ID: pasoId },
-        data: { visible: false },
+        data: {
+          estadoID: 3  // O el ID real de "Oculta"
+        }
       })
 
       return pasoActualizado

@@ -1,4 +1,4 @@
-import prisma  from '../../prisma/client.js'
+import prisma from '../../prisma/client.js'
 
 export class RecordatorioService {
   async crearRecordatorio({
@@ -14,7 +14,9 @@ export class RecordatorioService {
       const nuevoRecordatorio = await prisma.recordatorio.create({
         data: {
           descripcion,
-          frecuenciaID,
+          frecuencia: {
+            connect: { ID: frecuenciaID }
+          },
           hora: new Date(hora), // asumimos formato ISO
           diaSemana,
           sonido,

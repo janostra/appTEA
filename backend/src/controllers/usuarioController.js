@@ -4,7 +4,7 @@ const usuarioService = new UsuarioService()
 export class UsuarioController {
     async crearUsuario(req, res) {
         try {
-            const { pin } = req.body
+            const { pin } = req.body 
 
             if (!pin || typeof pin !== 'string' || pin.length !== 4) {
                 return res.status(400).json({ error: 'El PIN es obligatorio y debe tener 4 dígitos' })
@@ -20,7 +20,7 @@ export class UsuarioController {
 
     async alternarRol(req, res) {
         try {
-            const usuarioID = req.user?.id // Se espera que el middleware de auth haya agregado esto
+            const usuarioID = req.user?.id || req.body.userId
             const { pin } = req.body // Solo necesario si se cambia a adulto
 
             if (!usuarioID) {
@@ -39,7 +39,7 @@ export class UsuarioController {
     }
 
     async cambiarPin(req, res) {
-        const usuarioID = req.user?.id
+        const usuarioID = req.user?.id || req.body.userId
         const { nuevoPin } = req.body
 
         if (!usuarioID) {

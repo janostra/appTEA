@@ -65,7 +65,7 @@ class RecordatorioController {
         color,
       }
 
-      const recordatorioEditado = await this.recordatorioService.editarRecordatorio(
+      const recordatorioEditado = await RecordatorioService.editarRecordatorio(
         recordatorioID,
         datosActualizados
       )

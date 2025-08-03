@@ -7,7 +7,7 @@ class RutinaController {
   async crearRutina(req, res) {
     try {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
-      const userId = req.user?.id
+      const userId = req.user?.id || req.body.userId
       const { nombre, imagen } = rutinaData
 
       if (!nombre || !imagen || !motivacion) {
@@ -28,16 +28,16 @@ class RutinaController {
         userId
       })
 
-      const rutinaID = rutinaCreada.id
+      const rutinaID = rutinaCreada.ID
 
       let activacionesCreadas = []
       if (activaciones && Array.isArray(activaciones)) {
         activacionesCreadas = await ActivacionService.crearActivaciones(activaciones, rutinaID)
-      } ººº
+      }
 
       const pasosCreados = await PasoService.crearPasos(pasos, rutinaID)
 
-      const motivacionCreada = await MotivacionService.crearMotivacion(motivacion, rutinaID)
+      const motivacionCreada = await MotivacionService.crear(motivacion, rutinaID)
 
       return res.status(201).json({
         rutina: rutinaCreada,
@@ -54,8 +54,8 @@ class RutinaController {
   async editarRutina(req, res) {
     try {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
-      const userId = req.user?.id
-      const rutinaID = req.params.id  // Asumo que el ID viene por params
+      const userId = req.user?.id || req.body.userId
+      const rutinaID = parseInt(req.params.id, 10)
       const { nombre, imagen } = rutinaData
 
       if (!rutinaID) {
@@ -105,7 +105,8 @@ class RutinaController {
 
   async obtenerRutinasPorUsuario(req, res) {
     try {
-      const userId = req.user?.id
+      const id = req.user?.id || req.query.userId;
+      const userId = typeof id === 'string' ? parseInt(id, 10) : id;
 
       if (!userId) {
         return res.status(400).json({ error: 'Falta el userId' })
@@ -122,7 +123,7 @@ class RutinaController {
   async ocultarRutina(req, res) {
     try {
       const rutinaID = parseInt(req.params.id)
-      const userID = req.user?.id
+      const userID = req.user?.id || req.body.userId
 
       if (!userID) {
         return res.status(401).json({ error: 'No autorizado' })
@@ -145,7 +146,7 @@ class RutinaController {
     const { id } = req.params
 
     try {
-      const paso = await pasoService.ocultarPaso(parseInt(id))
+      const paso = await PasoService.ocultarPaso(parseInt(id))
       res.status(200).json(paso)
     } catch (error) {
       res.status(500).json({ mensaje: error.message })

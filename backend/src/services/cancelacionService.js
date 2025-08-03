@@ -1,4 +1,4 @@
-import prisma  from '../../prisma/client.js'
+import prisma from '../../prisma/client.js'
 
 export class CancelacionService {
   async crear(fechaHora, rutinaID) {
@@ -29,14 +29,16 @@ export class CancelacionService {
     }
   }
 
-  async getAll(userID) {
+  async getAll(userId) {
     try {
       const cancelaciones = await prisma.cancelacion.findMany({
         where: {
-          userID,
+          rutina: {
+            usuarioID: userId
+          }
         },
         orderBy: {
-          fechaHora: 'desc',
+          fechaHora: 'desc'
         },
       })
 

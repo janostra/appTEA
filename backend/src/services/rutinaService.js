@@ -85,7 +85,7 @@ class RutinaService {
   async ocultarRutina(rutinaID, userID) {
     // Validar que la rutina exista y le pertenezca al usuario
     const rutina = await prisma.rutina.findUnique({
-      where: { id: rutinaID }
+      where: { ID: rutinaID }
     })
 
     if (!rutina || rutina.usuarioID !== userID) {
@@ -94,9 +94,27 @@ class RutinaService {
 
     // Asumiendo que el estado "Oculta" tiene ID = 3
     return prisma.rutina.update({
-      where: { id: rutinaID },
+      where: { ID: rutinaID },
       data: {
         estadoID: 3  // O el ID real de "Oculta"
+      }
+    })
+  }
+
+    async cancelarRutina(rutinaID, userID) {
+    // Validar que la rutina exista y le pertenezca al usuario
+    const rutina = await prisma.rutina.findUnique({
+      where: { id: rutinaID }
+    })
+
+    if (!rutina || rutina.usuarioID !== userID) {
+      throw new Error('Rutina no encontrada o no autorizada')
+    }
+
+    return prisma.rutina.update({
+      where: { id: rutinaID },
+      data: {
+        estadoID: 4  
       }
     })
   }

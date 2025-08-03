@@ -24,7 +24,7 @@ export class UsuarioService {
             await prisma.infante.create({
                 data: {
                     infanteID: userID,
-                    nivel: 1, // Valor inicial por defecto
+                    nivelID: 1, // Valor inicial por defecto
                 },
             })
 
