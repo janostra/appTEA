@@ -127,4 +127,39 @@ export class UsuarioService {
       throw error;
     }
   }
+
+  async cambiarNombre(usuarioID, nuevoNombre) {
+    if (!nuevoNombre || typeof nuevoNombre !== 'string') {
+      throw new Error('Nombre inválido');
+    }
+
+    try {
+      // Actualizar nombre en tabla Usuario
+      const usuarioActualizado = await prisma.usuario.update({
+        where: { ID: usuarioID },
+        data: { nombre: nuevoNombre }
+      });
+
+      return usuarioActualizado;
+    } catch (error) {
+      console.error('Error al cambiar el nombre:', error);
+      throw new Error('No se pudo cambiar el nombre del usuario');
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

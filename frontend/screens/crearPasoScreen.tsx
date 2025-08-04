@@ -66,7 +66,7 @@ export default function CrearPasoScreen({ searchParams }: Props) {
           >
             <Ionicons name="arrow-back" size={24} color="#4f46e5" />
           </TouchableOpacity>
-          <Text style={styles.title}>Paso {pasosActuales} de 3</Text>
+          <Text style={styles.title}>Paso {pasosActuales} de 4</Text>
           <View style={styles.headerSpacer} />
         </View>
 

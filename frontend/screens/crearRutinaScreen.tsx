@@ -1,7 +1,9 @@
+
+//============================================================================================================
 import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, StyleSheet, TouchableOpacity, 
-  ScrollView, Image, Alert, Platform 
+import {
+  View, Text, TextInput, StyleSheet, TouchableOpacity,
+  ScrollView, Image, Alert, Platform
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
@@ -14,9 +16,7 @@ export default function CrearRutinaScreen() {
 
   const [nombre, setNombre] = useState('');
   const [imagenUri, setImagenUri] = useState<string | null>(null);
-  const [horarios, setHorarios] = useState([
-    { hora: '', dia: 'Lunes' },
-  ]);
+  const [horarios, setHorarios] = useState([{ hora: '', dia: 'Lunes' }]);
   const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   const pedirPermisos = async () => {
@@ -59,30 +59,27 @@ export default function CrearRutinaScreen() {
   };
 
   return (
-    <LinearGradient 
-      colors={['#f5f7fa', '#e4e8f0']} 
-      style={styles.gradient}
-    >
+    <LinearGradient colors={['#f5f7fa', '#e4e8f0']} style={styles.gradient}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Header con botón de volver */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            onPress={() => router.push('/')}
+          <TouchableOpacity
+            onPress={() => router.replace('/(tabs)/listaRutinas')}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color="#4f46e5" />
           </TouchableOpacity>
           <Text style={styles.title}>Crear Nueva Rutina</Text>
-          <View style={styles.headerSpacer} /> {/* Espaciador para alinear el título */}
+          <View style={styles.headerSpacer} />
         </View>
-        
+
         {/* Sección Nombre */}
         <View style={styles.card}>
           <Text style={styles.label}>Nombre de la Rutina</Text>
-          <TextInput 
-            style={styles.input} 
-            value={nombre} 
-            onChangeText={setNombre} 
+          <TextInput
+            style={styles.input}
+            value={nombre}
+            onChangeText={setNombre}
             placeholder="Ej: Rutina matutina"
             placeholderTextColor="#999"
           />
@@ -92,10 +89,7 @@ export default function CrearRutinaScreen() {
         <View style={styles.card}>
           <Text style={styles.label}>Imagen de la Rutina</Text>
           <View style={styles.imageSection}>
-            <TouchableOpacity 
-              onPress={seleccionarImagen} 
-              style={styles.imageButton}
-            >
+            <TouchableOpacity onPress={seleccionarImagen} style={styles.imageButton}>
               {imagenUri ? (
                 <Image source={{ uri: imagenUri }} style={styles.imagenSeleccionada} />
               ) : (
@@ -112,14 +106,11 @@ export default function CrearRutinaScreen() {
         <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Text style={styles.label}>Programar activación</Text>
-            <TouchableOpacity 
-              onPress={agregarHorario} 
-              style={styles.addButton}
-            >
+            <TouchableOpacity onPress={agregarHorario} style={styles.addButton}>
               <Ionicons name="add-circle" size={24} color="#4f46e5" />
             </TouchableOpacity>
           </View>
-          
+
           {horarios.map((h, index) => (
             <View key={index} style={styles.scheduleCard}>
               <View style={styles.row}>
@@ -166,10 +157,7 @@ export default function CrearRutinaScreen() {
                   )}
                 </View>
 
-                <TouchableOpacity 
-                  onPress={() => eliminarHorario(index)} 
-                  style={styles.deleteButton}
-                >
+                <TouchableOpacity onPress={() => eliminarHorario(index)} style={styles.deleteButton}>
                   <Ionicons name="trash-outline" size={20} color="#ef4444" />
                 </TouchableOpacity>
               </View>
@@ -179,15 +167,16 @@ export default function CrearRutinaScreen() {
 
         {/* Botones de acción */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
-          style={[styles.actionButton, styles.motivationButton]}
-          activeOpacity={0.8}
-          onPress={() => router.push('/elegirMotivacion')}
+          <TouchableOpacity
+            style={[styles.actionButton, styles.motivationButton]}
+            activeOpacity={0.8}
+            onPress={() => router.push('/elegirMotivacion')}
           >
-          <Ionicons name="sparkles" size={20} color="#fff" />
-          <Text style={styles.actionButtonText}>Motivación</Text>
-        </TouchableOpacity>
-          <TouchableOpacity 
+            <Ionicons name="sparkles" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Motivación</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.actionButton, styles.primaryButton]}
             onPress={() => router.push('/crearPaso')}
             activeOpacity={0.8}
@@ -202,13 +191,8 @@ export default function CrearRutinaScreen() {
 }
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  container: { 
-    padding: 20,
-    paddingBottom: 40,
-  },
+  gradient: { flex: 1 },
+  container: { padding: 20, paddingBottom: 40 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -225,12 +209,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  headerSpacer: {
-    width: 24, // Mismo ancho que el botón para mantener el título centrado
-  },
-  title: { 
-    fontSize: 24, 
-    fontWeight: '700', 
+  headerSpacer: { width: 24 },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
     color: '#1f2937',
     textAlign: 'center',
     flex: 1,
@@ -246,41 +228,20 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  label: { 
-    fontSize: 16, 
-    fontWeight: '600',
-    color: '#374151',
-  },
-  subLabel: { 
-    fontSize: 14, 
-    marginBottom: 6,
-    color: '#6b7280',
-  },
-  input: { 
-    borderWidth: 1, 
+  label: { fontSize: 16, fontWeight: '600', color: '#374151' },
+  subLabel: { fontSize: 14, marginBottom: 6, color: '#6b7280' },
+  input: {
+    borderWidth: 1,
     borderColor: '#e5e7eb',
     padding: 12,
-    borderRadius: 8, 
+    borderRadius: 8,
     backgroundColor: 'white',
     fontSize: 16,
     color: '#1f2937',
   },
-  inputError: {
-    borderColor: '#ef4444',
-  },
-  imageSection: {
-    marginTop: 8,
-  },
-  imageButton: {
-    width: '100%',
-    alignItems: 'center',
-  },
+  inputError: { borderColor: '#ef4444' },
+  imageSection: { marginTop: 8 },
+  imageButton: { width: '100%', alignItems: 'center' },
   imagePlaceholder: {
     width: '100%',
     height: 120,
@@ -292,37 +253,18 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     borderStyle: 'dashed',
   },
-  imagePlaceholderText: {
-    marginTop: 8,
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  imagenSeleccionada: { 
-    width: '100%', 
-    height: 150, 
-    borderRadius: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  column: {
-    flex: 1,
-  },
+  imagePlaceholderText: { marginTop: 8, color: '#6b7280', fontSize: 14 },
+  imagenSeleccionada: { width: '100%', height: 150, borderRadius: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  column: { flex: 1 },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#e5e7eb',
     borderRadius: 8,
     overflow: 'hidden',
   },
-  picker: {
-    height: Platform.OS === 'ios' ? 140 : 50,
-    color: '#1f2937',
-  },
-  addButton: {
-    padding: 4,
-  },
+  picker: { height: Platform.OS === 'ios' ? 140 : 50, color: '#1f2937' },
+  addButton: { padding: 4 },
   scheduleCard: {
     backgroundColor: '#f9fafb',
     borderRadius: 8,
@@ -331,19 +273,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
-  deleteButton: {
-    padding: 8,
-    marginLeft: 'auto',
-  },
-  errorText: {
-    color: '#ef4444',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  actionsContainer: {
-    marginTop: 20,
-    gap: 12,
-  },
+  deleteButton: { padding: 8, marginLeft: 'auto' },
+  errorText: { color: '#ef4444', fontSize: 12, marginTop: 4 },
+  actionsContainer: { marginTop: 20, gap: 12 },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -357,15 +289,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  primaryButton: {
-    backgroundColor: '#4f46e5',
-  },
-  motivationButton: {
-    backgroundColor: '#8b5cf6',
-  },
-  actionButtonText: { 
-    color: 'white', 
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  primaryButton: { backgroundColor: '#4f46e5' },
+  motivationButton: { backgroundColor: '#8b5cf6' },
+  actionButtonText: { color: 'white', fontWeight: '600', fontSize: 16 },
 });

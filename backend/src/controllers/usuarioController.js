@@ -75,4 +75,19 @@ export class UsuarioController {
       });
     }
   }
+
+
+  async cambiarNombre(req, res) {
+    try {
+      const { usuarioID, nuevoNombre } = req.body;
+      if (!usuarioID || !nuevoNombre) {
+        return res.status(400).json({ error: 'UsuarioID y nuevo nombre son requeridos' });
+      }
+      const usuarioActualizado = await usuarioService.cambiarNombre(usuarioID, nuevoNombre);
+      return res.json(usuarioActualizado);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message || 'Error al cambiar el nombre' });
+    }
+  }
 }
