@@ -1,60 +1,93 @@
-import { UsuarioService } from '../services/usuarioService.js'
-const usuarioService = new UsuarioService()
+import { UsuarioService } from '../services/usuarioService.js';
+
+const usuarioService = new UsuarioService();
 
 export class UsuarioController {
-    async crearUsuario(req, res) {
-        try {
-            const { pin } = req.body 
+  async crearUsuario(req, res) {
+    try {
+      const { pin, rol } = req.body;
 
-            if (!pin || typeof pin !== 'string' || pin.length !== 4) {
-                return res.status(400).json({ error: 'El PIN es obligatorio y debe tener 4 dígitos' })
-            }
+      if (!rol) {
+        return res.status(400).json({ error: 'El rol es requerido' });
+      }
 
-            const nuevoUsuario = await usuarioService.crearUsuario(pin)
-            return res.status(201).json(nuevoUsuario)
-        } catch (error) {
-            console.error('Error al crear usuario:', error)
-            return res.status(500).json({ error: error.message || 'Error interno del servidor' })
-        }
+      if (rol === 'adulto' && !pin) {
+        return res.status(400).json({ error: 'El PIN es requerido para rol adulto' });
+      }
+
+      const usuario = await usuarioService.crearUsuario({ pin, rol });
+
+      return res.status(201).json(usuario);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message || 'Error en el servidor' });
     }
+  }
 
-    async alternarRol(req, res) {
-        try {
-            const usuarioID = req.user?.id || req.body.userId
-            const { pin } = req.body // Solo necesario si se cambia a adulto
-
-            if (!usuarioID) {
-                return res.status(401).json({ error: 'Usuario no autenticado' })
-            }
-
-            const usuarioActualizado = await usuarioService.alternarRol(usuarioID, pin)
-            return res.status(200).json({
-                mensaje: 'Rol actualizado correctamente',
-                usuario: usuarioActualizado
-            })
-        } catch (error) {
-            console.error('Error al alternar el rol:', error)
-            return res.status(400).json({ error: error.message || 'No se pudo cambiar el rol del usuario' })
-        }
+  async alternarRol(req, res) {
+    try {
+      const { usuarioID, pin } = req.body;
+      if (!usuarioID) {
+        return res.status(400).json({ error: 'El ID del usuario es requerido' });
+      }
+      const usuarioActualizado = await usuarioService.alternarRol(usuarioID, pin);
+      return res.json(usuarioActualizado);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message || 'Error al cambiar el rol' });
     }
+  }
 
-    async cambiarPin(req, res) {
-        const usuarioID = req.user?.id || req.body.userId
-        const { nuevoPin } = req.body
-
-        if (!usuarioID) {
-            return res.status(401).json({ message: 'Usuario no autenticado' })
-        }
-
-        if (!nuevoPin) {
-            return res.status(400).json({ message: 'Debes proporcionar un nuevo PIN' })
-        }
-
-        try {
-            const usuario = await this.usuarioService.cambiarPin(usuarioID, nuevoPin)
-            return res.status(200).json({ message: 'PIN actualizado correctamente', usuario })
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
+  async cambiarPin(req, res) {
+    try {
+      const { usuarioID, nuevoPin } = req.body;
+      if (!usuarioID || !nuevoPin) {
+        return res.status(400).json({ error: 'UsuarioID y nuevo PIN son requeridos' });
+      }
+      const usuarioActualizado = await usuarioService.cambiarPin(usuarioID, nuevoPin);
+      return res.json(usuarioActualizado);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message || 'Error al cambiar el PIN' });
     }
+  }
+
+  async autenticarAdulto(req, res) {
+    try {
+      const { pin } = req.body;
+      
+      if (!pin) {
+        return res.status(400).json({ error: 'El PIN es requerido' });
+      }
+
+      // Buscar adulto por PIN
+      const adulto = await usuarioService.autenticarAdulto(pin);
+
+      return res.json({
+        adultoID: adulto.adultoID,
+        nombre: adulto.nombre || 'Adulto',
+        rol: 'adulto'
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(error.message === 'PIN incorrecto' ? 401 : 500).json({ 
+        message: error.message || 'Error en el servidor' 
+      });
+    }
+  }
+
+
+  async cambiarNombre(req, res) {
+    try {
+      const { usuarioID, nuevoNombre } = req.body;
+      if (!usuarioID || !nuevoNombre) {
+        return res.status(400).json({ error: 'UsuarioID y nuevo nombre son requeridos' });
+      }
+      const usuarioActualizado = await usuarioService.cambiarNombre(usuarioID, nuevoNombre);
+      return res.json(usuarioActualizado);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message || 'Error al cambiar el nombre' });
+    }
+  }
 }

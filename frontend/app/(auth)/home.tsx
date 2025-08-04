@@ -16,7 +16,7 @@ export default function HomeScreen() {
       router.push('/addReminder');
       break;
     case 'rutinas':
-      router.push('/crearRutina');
+      router.push('/listaRutinas');
       break;
     case 'perfil':
       router.push('/perfil');
@@ -27,7 +27,11 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.welcome}>¡Hola, {user?.name || 'Usuario'}!</Text>
+        {/* <Text style={styles.welcome}>¡Hola, {user?.name || 'Usuario'}!</Text> */}
+        <Text style={styles.welcome}>
+        ¡Hola, {(typeof user?.name === 'string' && user.name.trim() !== '') ? user.name : 'Adulto'}!
+        </Text>
+
         <Text style={styles.subtitle}>¿Qué querés hacer hoy?</Text>
 
         <View style={styles.buttonGrid}>
@@ -55,7 +59,7 @@ export default function HomeScreen() {
           >
             <Text style={styles.buttonIcon}>📋</Text>
             <Text style={styles.buttonText}>Rutinas</Text>
-            <Text style={styles.buttonSubtext}>Crear rutina</Text>
+            <Text style={styles.buttonSubtext}>Ver y crear rutinas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -68,15 +72,15 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, styles.logout]}
-          onPress={() => {
-            logout();
-            router.replace('/login');
-          }}
-        >
-          <Text style={styles.buttonText}>🚪 Cerrar sesión</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.logout]}
+            onPress={() => {
+              logout();
+              router.replace('/login');
+            }}
+          >
+            <Text style={styles.buttonText}>🚪 Cerrar sesión</Text>
+          </TouchableOpacity>
       </View>
     </ScrollView>
   );

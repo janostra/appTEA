@@ -29,7 +29,7 @@ interface Color {
 export default function AddReminderScreen() {
   const router = useRouter();
 
-  const [rutinasDisponibles, setRutinasDisponibles] = useState<Rutina[]>([]);
+  //const [rutinasDisponibles, setRutinasDisponibles] = useState<Rutina[]>([]);
   const [loadingRutinas, setLoadingRutinas] = useState(true);
   const [routineId, setRoutineId] = useState<number | null>(null);
   const [frequency, setFrequency] = useState<string>('Semanal');
@@ -56,7 +56,7 @@ export default function AddReminderScreen() {
         setLoadingRutinas(true);
         const res = await fetch('http://localhost:3000/api/rutinas');
         const data = await res.json();
-        setRutinasDisponibles(data);
+        //setRutinasDisponibles(data);
       } catch (error) {
         console.error('Error al cargar rutinas:', error);
         Alert.alert('Error', 'No se pudieron cargar las rutinas');
@@ -128,9 +128,11 @@ export default function AddReminderScreen() {
             dropdownIconColor="#4f46e5"
           >
             <Picker.Item label="Seleccione una rutina" value={null} />
-            {rutinasDisponibles.map((r) => (
+            {/*{rutinasDisponibles.map((r) => (
               <Picker.Item key={r.ID} label={r.nombre} value={r.ID} />
             ))}
+              */}
+              ss
           </Picker>
         </View>
 
