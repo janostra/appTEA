@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, 
-  StyleSheet, Alert, Image, ScrollView 
+import {
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, Alert, Image, ScrollView
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
   searchParams?: {
     paso?: string;
+    nombre?: string;
+    imagenUri?: string;
+    horarios?: string; // ¡Importante! porque lo estás mandando como string con JSON.stringify
   };
 }
+export default function CrearPasoScreen() {
 
-export default function CrearPasoScreen({ searchParams }: Props) {
+  function normalizeParam(param: string | string[] | undefined): string {
+    if (Array.isArray(param)) {
+      return param[0];
+    }
+    return param ?? '';
+  }
+
   const router = useRouter();
+  const searchParams = useLocalSearchParams();
   const pasosActuales = Number(searchParams?.paso ?? 1);
+  const nombre = searchParams?.nombre ?? '';
+  const imagenUriRutina = searchParams?.imagenUri ?? '';
+  const horarios = normalizeParam(searchParams?.horarios);
+  const motivacion = { icono: "pulgar arriba", descripcion: "Lo haz hecho bien!", fechaObtencion: "2025-08-04T08:00:00.000Z" }
 
+  console.log('Nombre:', nombre);
+  console.log('Imagen URI:', imagenUriRutina);
+  console.log('Horarios:', horarios);
   const [descripcion, setDescripcion] = useState('');
   const [imagenUri, setImagenUri] = useState<string | null>(null);
 
@@ -60,7 +78,7 @@ export default function CrearPasoScreen({ searchParams }: Props) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.back()}
             style={styles.backButton}
           >
@@ -86,11 +104,11 @@ export default function CrearPasoScreen({ searchParams }: Props) {
 
           {/* Sección Multimedia */}
           <Text style={styles.label}>Multimedia</Text>
-          
+
           <View style={styles.mediaOptions}>
             {/* Selector de imagen */}
-            <TouchableOpacity 
-              onPress={seleccionarImagen} 
+            <TouchableOpacity
+              onPress={seleccionarImagen}
               style={styles.mediaButton}
             >
               <View style={styles.mediaButtonContent}>
@@ -100,22 +118,22 @@ export default function CrearPasoScreen({ searchParams }: Props) {
             </TouchableOpacity>
 
             {/* Grabación de audio */}
-            <TouchableOpacity style={styles.mediaButton}>
+            {/* <TouchableOpacity style={styles.mediaButton}>
               <View style={styles.mediaButtonContent}>
                 <Ionicons name="mic" size={28} color="#4f46e5" />
                 <Text style={styles.mediaButtonText}>Audio</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Vista previa imagen */}
           {imagenUri && (
             <View style={styles.imagePreviewContainer}>
-              <Image 
-                source={{ uri: imagenUri }} 
-                style={styles.imagenSeleccionada} 
+              <Image
+                source={{ uri: imagenUri }}
+                style={styles.imagenSeleccionada}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.deleteImageButton}
                 onPress={() => setImagenUri(null)}
               >
@@ -134,15 +152,51 @@ export default function CrearPasoScreen({ searchParams }: Props) {
           )}
 
           <View style={styles.navigationButtons}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.navButton, styles.saveButton]}
-              onPress={() => router.back()}
+              onPress={async () => {
+                try {
+                  console.log(JSON.stringify({
+                    motivacion,
+                    pasos: pasosActuales,
+                    activaciones: horarios,
+                    imagen: imagenUriRutina,
+                    nombre,
+                  }),
+                  )
+                  const response = await fetch('http://localhost:3000/api/rutinas', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      motivacion,
+                      pasos: pasosActuales > 0
+                        ? [{ descripcion: descripcion || 'Paso sin descripción', imagen: imagenUri || '' }]
+                        : [],
+                      activaciones: horarios,
+                      imagen: imagenUriRutina,
+                      nombre,
+                    }),
+                  });
+
+                  const data = await response.json();
+                  if (response.ok) {
+                    // Podés mostrar un mensaje, redirigir, limpiar campos, etc.
+                    console.log('Rutina guardada:', data);
+                    router.push('/listaRutinas');
+                  } else {
+                  }
+                } catch (error) {
+                  console.error('Error de red:', error);
+                }
+              }}
             >
               <Text style={styles.navButtonText}>Guardar y salir</Text>
             </TouchableOpacity>
 
             {pasosActuales < 3 && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.navButton, styles.nextButton]}
                 onPress={agregarSiguientePaso}
               >

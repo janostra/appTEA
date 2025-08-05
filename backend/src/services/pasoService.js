@@ -6,7 +6,7 @@ class PasoService {
 
     try {
       const pasosCreados = await Promise.all(
-        pasos.map(({ orden, descripcion, estadoID, imagen, audio }) =>
+        pasos.map(({ orden, descripcion, imagen, audio }) =>
           prisma.paso.create({
             data: {
               orden,
@@ -14,7 +14,7 @@ class PasoService {
               imagen,
               audio,
               estado: {
-                connect: { ID: estadoID }
+                connect: { ID: 1 }
               },
               rutina: {
                 connect: { ID: rutinaId },

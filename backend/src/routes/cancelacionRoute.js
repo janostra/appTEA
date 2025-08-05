@@ -4,11 +4,11 @@ import { CancelacionController } from '../controllers/cancelacionController.js'
 const router = Router()
 const cancelacionController = new CancelacionController()
 
-router.post('/cancelaciones', (req, res) =>
+router.post('/', (req, res) =>
   cancelacionController.crearCancelacion(req, res)
 )
 
-router.get('/cancelaciones', (req, res) =>
+router.get('/', (req, res) =>
   cancelacionController.getAllCancelaciones(req, res)
 )
 

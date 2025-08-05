@@ -3,11 +3,11 @@ import RecordatorioController from '../controllers/recordatorioController.js'
 
 const router = Router()
 
-router.post('/recordatorios', (req, res) =>
+router.post('/', (req, res) =>
   RecordatorioController.crearRecordatorio(req, res)
 )
 
-router.put('/recordatorios/:id', (req, res) =>
+router.put('/:id', (req, res) =>
   RecordatorioController.editarRecordatorio(req, res)
 )
 

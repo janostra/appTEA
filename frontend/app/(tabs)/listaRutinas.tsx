@@ -134,8 +134,13 @@ export default function ListaRutinasScreen() {
   useEffect(() => {
     const fetchRutinas = async () => {
       try {
-        const res = await api.get('/rutinas'); // endpoint para traer todas las rutinas
-        setRutinas(res.data);
+      const res = await fetch('http://localhost:3000/api/rutinas');
+      
+      if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
+
+      const data = await res.json(); // 👈 ¡Acá está la magia!
+      console.log('Rutinas:', data);
+      setRutinas(data);
       } catch (err) {
         console.error('Error al obtener rutinas:', err);
       } finally {

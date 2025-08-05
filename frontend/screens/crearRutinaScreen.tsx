@@ -10,6 +10,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import {convertirHorarioAISO} from '../scripts/date-converter'
 
 export default function CrearRutinaScreen() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export default function CrearRutinaScreen() {
 
         {/* Sección Horarios */}
         <View style={styles.card}>
-          <View style={styles.sectionHeader}>
+          <View>
             <Text style={styles.label}>Programar activación</Text>
             <TouchableOpacity onPress={agregarHorario} style={styles.addButton}>
               <Ionicons name="add-circle" size={24} color="#4f46e5" />
@@ -167,23 +168,34 @@ export default function CrearRutinaScreen() {
 
         {/* Botones de acción */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.actionButton, styles.motivationButton]}
             activeOpacity={0.8}
             onPress={() => router.push('/elegirMotivacion')}
           >
             <Ionicons name="sparkles" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Motivación</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={[styles.actionButton, styles.primaryButton]}
-            onPress={() => router.push('/crearPaso')}
+            onPress={() => {
+              console.log(horarios)
+              router.push({
+                pathname: '/crearPaso',
+                params: {
+                  nombre,
+                  imagenUri,
+                  horarios: convertirHorarioAISO(horarios[0]),
+                },
+              });
+            }}
             activeOpacity={0.8}
           >
             <Ionicons name="add-circle-outline" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Crear Paso</Text>
           </TouchableOpacity>
+
         </View>
       </ScrollView>
     </LinearGradient>

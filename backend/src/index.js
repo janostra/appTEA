@@ -14,13 +14,16 @@ const PORT = process.env.PORT || 3000
 app.use(cors({
   origin: 'http://localhost:8081'
 }));
-app.use(express.json())
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 // Rutas
 app.use('/api/rutinas', rutinaRoutes)
 app.use('/api/cancelaciones', cancelacionRoutes)
 app.use('/api/recordatorios', recordatorioRoutes)
 app.use('/api/usuarios', usuarioRoutes)
+
 
 // Manejo básico de rutas no encontradas
 app.use((req, res) => {

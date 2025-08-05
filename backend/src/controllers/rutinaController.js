@@ -7,10 +7,12 @@ class RutinaController {
   async crearRutina(req, res) {
     try {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
-      const userId = req.user?.id || req.body.userId
+      const userId = 5
       const { nombre, imagen } = rutinaData
 
-      if (!nombre || !imagen || !motivacion) {
+      console.log(req.body)
+
+      if (!nombre || !imagen) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' })
       }
 
@@ -105,7 +107,7 @@ class RutinaController {
 
   async obtenerRutinasPorUsuario(req, res) {
     try {
-      const id = req.user?.id || req.query.userId;
+      const id = req.user?.id || 5;
       const userId = typeof id === 'string' ? parseInt(id, 10) : id;
 
       if (!userId) {
