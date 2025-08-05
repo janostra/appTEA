@@ -14,17 +14,13 @@ export class RecordatorioService {
       const nuevoRecordatorio = await prisma.recordatorio.create({
         data: {
           descripcion,
-          frecuencia: {
-            connect: { ID: frecuenciaID }
-          },
-          hora: new Date(hora), // asumimos formato ISO
+          frecuenciaID: Number(frecuenciaID),  // ✅ OK
+          hora: new Date(hora),                // ✅ Si viene como string ISO
           diaSemana,
           sonido,
           color,
-          rutina: {
-            connect: { ID: rutinaID },
-          },
-        },
+          rutinaID: Number(rutinaID),          // ✅ OK
+        }
       })
 
       return nuevoRecordatorio

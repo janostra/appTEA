@@ -29,7 +29,7 @@ interface Color {
 export default function AddReminderScreen() {
   const router = useRouter();
 
-  //const [rutinasDisponibles, setRutinasDisponibles] = useState<Rutina[]>([]);
+  const [rutinasDisponibles, setRutinasDisponibles] = useState<Rutina[]>([]);
   const [loadingRutinas, setLoadingRutinas] = useState(true);
   const [routineId, setRoutineId] = useState<number | null>(null);
   const [frequency, setFrequency] = useState<string>('Semanal');
@@ -55,8 +55,9 @@ export default function AddReminderScreen() {
       try {
         setLoadingRutinas(true);
         const res = await fetch('http://localhost:3000/api/rutinas');
+        console.log(res)
         const data = await res.json();
-        //setRutinasDisponibles(data);
+        setRutinasDisponibles(data);
       } catch (error) {
         console.error('Error al cargar rutinas:', error);
         Alert.alert('Error', 'No se pudieron cargar las rutinas');
@@ -72,7 +73,31 @@ export default function AddReminderScreen() {
     return regex.test(hora);
   };
 
-  const handleGuardar = () => {
+  function mapFrequencyToID(freq: string): number {
+    switch (freq) {
+      case 'Diario': return 1;
+      case 'Semanal': return 2;
+      case 'Mensual': return 3;
+      // ajustá según tus IDs reales
+      default: return 1;
+    }
+  }
+
+  function horaAFechaCompleta(hora: string): string {
+  // hora = "HH:mm"
+  const [hh, mm] = hora.split(':');
+  const ahora = new Date();
+
+  ahora.setHours(parseInt(hh, 10));
+  ahora.setMinutes(parseInt(mm, 10));
+  ahora.setSeconds(0);
+  ahora.setMilliseconds(0);
+
+  // Lo convertís a ISO string para el backend
+  return ahora.toISOString();
+}
+
+  const handleGuardar = async () => {
     if (!routineId) {
       Alert.alert('Error', 'Debe seleccionar una rutina');
       return;
@@ -83,19 +108,39 @@ export default function AddReminderScreen() {
       return;
     }
 
-    console.log({
-      routineId,
-      frequency,
-      day,
-      time,
-      description,
-      selectedColor,
-      sound,
-    });
+    const payload = {
+      descripcion: description,
+      frecuenciaID: mapFrequencyToID(frequency), // acá tenés que mapear "Semanal" -> 1, "Diario" -> 2, etc
+      hora: horaAFechaCompleta(time),
+      diaSemana: frequency === 'Semanal' ? day : null,
+      sonido: sound,
+      color: selectedColor,
+      rutinaID: routineId,
+    };
 
-    Alert.alert('Recordatorio guardado', 'Tu recordatorio fue creado correctamente.', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
+    console.log('Payload que se envía:', payload);
+
+    try {
+      const res = await fetch('http://localhost:3000/api/recordatorios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error ${res.status}: ${errorText}`);
+      }
+
+      Alert.alert('Recordatorio guardado', 'Tu recordatorio fue creado correctamente.', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      console.error('Error al guardar recordatorio:', error);
+      Alert.alert('Error', 'No se pudo guardar el recordatorio.');
+    }
   };
 
   if (loadingRutinas) {
@@ -128,11 +173,9 @@ export default function AddReminderScreen() {
             dropdownIconColor="#4f46e5"
           >
             <Picker.Item label="Seleccione una rutina" value={null} />
-            {/*{rutinasDisponibles.map((r) => (
+            {rutinasDisponibles.map((r) => (
               <Picker.Item key={r.ID} label={r.nombre} value={r.ID} />
             ))}
-              */}
-              ss
           </Picker>
         </View>
 
