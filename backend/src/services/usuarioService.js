@@ -49,34 +49,34 @@ export class UsuarioService {
     }
   }
 
-  async alternarRol(usuarioID, pin = null) {
+  async alternarRol(pin = null) {
     try {
-      const usuario = await prisma.usuario.findUnique({
-        where: { ID: usuarioID },
+      // Obtenemos el único usuario (asume que hay uno solo en la tabla)
+      const usuario = await prisma.usuario.findFirst({
         include: { adulto: true },
       });
 
       if (!usuario) throw new Error('Usuario no encontrado');
 
-      const rolActual = usuario.rolID; // 1: niño, 2: adulto
+      const rolActual = usuario.rolID;
       let nuevoRolID;
 
-      if (rolActual === 2) {
-        // Adulto → Niño (no requiere PIN)
-        nuevoRolID = 1;
-      } else if (rolActual === 1) {
+      if (rolActual === 1) {
+        // Adulto → Niño (sin PIN)
+        nuevoRolID = 2;
+      } else if (rolActual === 2) {
         // Niño → Adulto (requiere PIN)
         if (!pin) throw new Error('Se requiere el PIN para cambiar a modo adulto');
-        if (!usuario.adulto || usuario.adulto.pin !== parseInt(pin, 10)) {
-          throw new Error('PIN incorrecto');
-        }
-        nuevoRolID = 2;
+
+        const pinCorrecto = usuario.adulto?.pin === parseInt(pin, 10);
+        if (!pinCorrecto) throw new Error('PIN incorrecto');
+
+        nuevoRolID = 1;
       } else {
         throw new Error('Rol desconocido');
       }
-
       const usuarioActualizado = await prisma.usuario.update({
-        where: { ID: usuarioID },
+        where: { ID: usuario.ID },
         data: { rolID: nuevoRolID },
       });
 
@@ -147,19 +147,24 @@ export class UsuarioService {
     }
   }
 
+async getUsuarioRol() {
+  try {
+    const usuario = await prisma.usuario.findFirst({
+      include: { rol: true },
+    });
 
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    return {
+      usuarioID: usuario.ID,
+      rolID: usuario.rolID,
+    };
+  } catch (error) {
+    console.error('Error al obtener el rol del usuario:', error);
+    throw new Error('No se pudo obtener el rol del usuario');
+  }
+}
 
 }

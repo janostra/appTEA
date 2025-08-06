@@ -26,12 +26,21 @@ export class UsuarioController {
 
   async alternarRol(req, res) {
     try {
-      const { usuarioID, pin } = req.body;
+      const { usuarioID, rolID } = await usuarioService.getUsuarioRol();
+      
+      let usuarioActualizado
       if (!usuarioID) {
         return res.status(400).json({ error: 'El ID del usuario es requerido' });
       }
-      const usuarioActualizado = await usuarioService.alternarRol(usuarioID, pin);
+      if (rolID == 2) {
+        const { pin } = req.body
+        usuarioActualizado = await usuarioService.alternarRol(pin);
+      } else {
+        usuarioActualizado = await usuarioService.alternarRol()
+      }
+
       return res.json(usuarioActualizado);
+      
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: error.message || 'Error al cambiar el rol' });
@@ -40,11 +49,11 @@ export class UsuarioController {
 
   async cambiarPin(req, res) {
     try {
-      const { usuarioID, nuevoPin } = req.body;
+      const { nuevoPin } = req.body;
       if (!usuarioID || !nuevoPin) {
-        return res.status(400).json({ error: 'UsuarioID y nuevo PIN son requeridos' });
+        return res.status(400).json({ error: 'nuevo PIN son requeridos' });
       }
-      const usuarioActualizado = await usuarioService.cambiarPin(usuarioID, nuevoPin);
+      const usuarioActualizado = await usuarioService.cambiarPin(nuevoPin);
       return res.json(usuarioActualizado);
     } catch (error) {
       console.error(error);
@@ -90,4 +99,16 @@ export class UsuarioController {
       return res.status(500).json({ error: error.message || 'Error al cambiar el nombre' });
     }
   }
+
+  async getUsuarioRol(req, res) {
+    try {
+      const rol = await usuarioService.getUsuarioRol();
+      return res.status(200).json(rol);
+    } catch (error) {
+      console.error('Error en getUsuarioRol:', error);
+      return res.status(500).json({ error: error.message || 'Error al obtener el rol del usuario' });
+    }
+  }
+
+  
 }

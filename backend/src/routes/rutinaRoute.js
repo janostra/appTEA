@@ -1,24 +1,25 @@
 import { Router } from 'express'
 import RutinaController from '../controllers/rutinaController.js'
+import { protegerPorRol } from '../middlewares/auth.js'
 
 const router = Router()
 
-router.post('/', (req, res) =>
+router.post('/', protegerPorRol(1), (req, res) =>
   RutinaController.crearRutina(req, res)
 )
 
-router.put('/:id', (req, res) =>
+router.put('/:id', protegerPorRol(1), (req, res) =>
   RutinaController.editarRutina(req, res)
 )
 
-router.get('/', (req, res) =>
+router.get('/', protegerPorRol(1), (req, res) =>
   RutinaController.obtenerRutinasPorUsuario(req, res)
 )
 
-router.patch('/:id/ocultar', RutinaController.ocultarRutina)
+router.patch('/:id/ocultar', protegerPorRol(1), RutinaController.ocultarRutina)
 
 
-router.patch('/pasos/:id/ocultar', RutinaController.ocultarPaso)
+router.patch('/pasos/:id/ocultar', protegerPorRol(1), RutinaController.ocultarPaso)
 
 
 export default router
