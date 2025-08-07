@@ -8,7 +8,6 @@ import { useRouter } from 'expo-router';
 const PerfilScreen = ({ route }) => {
   const { logout } = useAuth();
   const router = useRouter();
-
   const [rolID, setRolID] = useState(null);
   const [mostrarModalPin, setMostrarModalPin] = useState(false);
   const [pinIngresado, setPinIngresado] = useState('');
@@ -37,7 +36,7 @@ const PerfilScreen = ({ route }) => {
       if (response.data?.rolID === 2) {
         Alert.alert('Éxito', 'Cambiado a modo niño');
         setRolID(1);
-        router.replace('/infantes');
+        router.replace('/app');
       } else {
         Alert.alert('Error', 'No se pudo cambiar al modo niño.');
       }

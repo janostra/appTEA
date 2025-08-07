@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +12,20 @@ export default function LoginScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { login } = useAuth();
   const router = useRouter();
+  const [rolID, setRolID] = useState(null);
+
+  useEffect(() => {
+    const fetchRol = async () => {
+      try {
+        const response = await api.get('http://localhost:3000/api/usuarios/rol');
+        console.log(response.data.rolID)
+        setRolID(response.data.rolID);
+      } catch (error) {
+        console.error('Error al obtener rol:', error);
+      }
+    };
+    fetchRol();
+  }, []);
 
   const handleLogin = async () => {
     setErrorMessage(null);
@@ -93,9 +108,11 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
-        <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
-      </TouchableOpacity>
+      {rolID === null && (
+        <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
+          <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

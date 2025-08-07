@@ -12,7 +12,7 @@ router.put('/:id', protegerPorRol(1), (req, res) =>
   RutinaController.editarRutina(req, res)
 )
 
-router.get('/', protegerPorRol(1), (req, res) =>
+router.get('/', (req, res) =>
   RutinaController.obtenerRutinasPorUsuario(req, res)
 )
 

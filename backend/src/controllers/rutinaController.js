@@ -2,12 +2,13 @@ import rutinaService from '../services/rutinaService.js'
 import PasoService from '../services/pasoService.js'
 import ActivacionService from '../services/activacionService.js'
 import MotivacionService from '../services/motivacionService.js'
+import { UsuarioService } from '../services/usuarioService.js'
+const usuarioService = new UsuarioService();
 
 class RutinaController {
   async crearRutina(req, res) {
     try {
       const { pasos, activaciones, motivacion, ...rutinaData } = req.body
-      const userId = 5
       const { nombre, imagen } = rutinaData
 
       console.log(req.body)
@@ -20,14 +21,15 @@ class RutinaController {
         return res.status(400).json({ error: 'Debe haber al menos un paso' })
       }
 
-      if (!userId) {
-        return res.status(401).json({ error: 'No autorizado. Usuario no identificado.' })
+      const usuario = await usuarioService.getUsuario();
+      if (!usuario || !usuario.ID) {
+        return res.status(401).json({ error: 'No autorizado. Usuario no identificado.' });
       }
 
       const rutinaCreada = await rutinaService.crearRutina({
         nombre,
         imagen,
-        userId
+        userId: usuario.ID
       })
 
       const rutinaID = rutinaCreada.ID
@@ -107,18 +109,17 @@ class RutinaController {
 
   async obtenerRutinasPorUsuario(req, res) {
     try {
-      const id = req.user?.id || 5;
-      const userId = typeof id === 'string' ? parseInt(id, 10) : id;
+      const usuario = await usuarioService.getUsuario();
 
-      if (!userId) {
-        return res.status(400).json({ error: 'Falta el userId' })
+      if (!usuario?.ID) {
+        return res.status(400).json({ error: 'No se pudo obtener el ID del usuario' });
       }
 
-      const rutinas = await rutinaService.getRutinasPorUsuario(userId)
-      res.json(rutinas)
+      const rutinas = await rutinaService.getRutinasPorUsuario(usuario.ID);
+      res.json(rutinas);
     } catch (error) {
-      console.error('Error en obtenerRutinasPorUsuario:', error)
-      res.status(500).json({ error: 'No se pudieron obtener las rutinas' })
+      console.error('Error en obtenerRutinasPorUsuario:', error);
+      res.status(500).json({ error: 'No se pudieron obtener las rutinas' });
     }
   }
 

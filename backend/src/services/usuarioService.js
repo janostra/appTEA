@@ -167,4 +167,31 @@ async getUsuarioRol() {
   }
 }
 
+async getUsuario() {
+  try {
+    const usuario = await prisma.usuario.findFirst({
+      include: {
+        rol: true,
+        infante: true,
+        adulto: true,
+        rutinas: true,
+      },
+      // El ID viene con el objeto por defecto, no hace falta incluirlo explícitamente
+    });
+
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    // Por si querés verlo explícito, podés desestructurar:
+    // const { ID, rol, infante, adulto, rutinas } = usuario;
+
+    return usuario;
+  } catch (error) {
+    console.error('Error al obtener el usuario:', error);
+    throw new Error('No se pudo obtener el usuario');
+  }
+}
+
+
 }
