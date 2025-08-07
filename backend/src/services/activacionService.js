@@ -1,7 +1,7 @@
 import prisma  from '../../prisma/client.js'
 
 class ActivacionService {
-  async crearActivaciones(activaciones = [], rutinaId) {
+  async crearActivaciones(activaciones, rutinaId) {
     if (!Array.isArray(activaciones) || activaciones.length === 0) return []
 
     try {

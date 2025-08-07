@@ -1,6 +1,4 @@
-
-//============================================================================================================
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
   ScrollView, Image, Alert, Platform
@@ -10,14 +8,12 @@ import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import {convertirHorarioAISO} from '../scripts/date-converter'
+import { useRutina } from '../context/RutinaContext'; // Importá el hook del contexto
 
 export default function CrearRutinaScreen() {
   const router = useRouter();
+  const { nombre, setNombre, imagenUri, setImagenUri, horarios, setHorarios } = useRutina();
 
-  const [nombre, setNombre] = useState('');
-  const [imagenUri, setImagenUri] = useState<string | null>(null);
-  const [horarios, setHorarios] = useState([{ hora: '', dia: 'Lunes' }]);
   const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   const pedirPermisos = async () => {
@@ -28,7 +24,9 @@ export default function CrearRutinaScreen() {
     }
     return true;
   };
-
+  const consolelog = async () => {
+    console.log(horarios)
+  }
   const seleccionarImagen = async () => {
     const tienePermiso = await pedirPermisos();
     if (!tienePermiso) return;
@@ -105,7 +103,7 @@ export default function CrearRutinaScreen() {
 
         {/* Sección Horarios */}
         <View style={styles.card}>
-          <View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.label}>Programar activación</Text>
             <TouchableOpacity onPress={agregarHorario} style={styles.addButton}>
               <Ionicons name="add-circle" size={24} color="#4f46e5" />
@@ -168,34 +166,16 @@ export default function CrearRutinaScreen() {
 
         {/* Botones de acción */}
         <View style={styles.actionsContainer}>
-          {/* <TouchableOpacity
-            style={[styles.actionButton, styles.motivationButton]}
-            activeOpacity={0.8}
-            onPress={() => router.push('/elegirMotivacion')}
-          >
-            <Ionicons name="sparkles" size={20} color="#fff" />
-            <Text style={styles.actionButtonText}>Motivación</Text>
-          </TouchableOpacity> */}
-
           <TouchableOpacity
             style={[styles.actionButton, styles.primaryButton]}
-            onPress={() => {
-              console.log(horarios)
-              router.push({
-                pathname: '/crearPaso',
-                params: {
-                  nombre,
-                  imagenUri,
-                  horarios: convertirHorarioAISO(horarios[0]),
-                },
-              });
+            onPress={() => {consolelog(),
+              router.push('/crearPaso'); // no hace falta pasar params, están en contexto
             }}
             activeOpacity={0.8}
           >
             <Ionicons name="add-circle-outline" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Crear Paso</Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
     </LinearGradient>
@@ -276,7 +256,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   picker: { height: Platform.OS === 'ios' ? 140 : 50, color: '#1f2937' },
-  addButton: { padding: 4 },
+  addButton: { padding: 4, marginLeft: 8 },
   scheduleCard: {
     backgroundColor: '#f9fafb',
     borderRadius: 8,

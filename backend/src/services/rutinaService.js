@@ -101,7 +101,7 @@ class RutinaService {
     })
   }
 
-    async cancelarRutina(rutinaID, userID) {
+  async cancelarRutina(rutinaID, userID) {
     // Validar que la rutina exista y le pertenezca al usuario
     const rutina = await prisma.rutina.findUnique({
       where: { id: rutinaID }
@@ -114,7 +114,17 @@ class RutinaService {
     return prisma.rutina.update({
       where: { id: rutinaID },
       data: {
-        estadoID: 4  
+        estadoID: 4
+      }
+    })
+  }
+
+  async getRutinaPorId(rutinaID) {
+    return await prisma.rutina.findUnique({
+      where: { ID: rutinaID },
+      include: {
+        pasos: true,
+        diaHoraActivaciones: true
       }
     })
   }

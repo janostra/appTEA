@@ -1,11 +1,14 @@
 import React from 'react';
 import { Slot } from 'expo-router';
 import { AuthProvider } from '../context/AuthContext';
+import { RutinaProvider } from '../context/RutinaContext';
 
 export default function Layout() {
   return (
-    <AuthProvider>
-      <Slot />
-    </AuthProvider>
+    <RutinaProvider>
+      <AuthProvider>
+        <Slot />
+      </AuthProvider>
+    </RutinaProvider>
   );
 }
