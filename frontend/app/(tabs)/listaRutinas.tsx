@@ -68,8 +68,10 @@ export default function ListaRutinasScreen() {
         <Text style={styles.fecha}>Creada: {new Date(item.fechaCreacion).toLocaleDateString()}</Text>
       )}
       <TouchableOpacity
+
         style={[styles.estadoButton, { backgroundColor: item.estadoID === 1 ? '#d9534f' : '#4CAF50' }]}
         onPress={() => toggleEstado(item.ID, item.estadoID)}
+
         disabled={updatingId === item.ID}
       >
         {updatingId === item.ID ? (

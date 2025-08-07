@@ -126,17 +126,16 @@ class RutinaController {
   async ocultarRutina(req, res) {
     try {
       const rutinaID = parseInt(req.params.id)
-      const userID = req.user?.id || req.body.userId
-
-      if (!userID) {
-        return res.status(401).json({ error: 'No autorizado' })
+      const usuario = await usuarioService.getUsuario();
+      if (!usuario || !usuario.ID) {
+        return res.status(401).json({ error: 'No autorizado. Usuario no identificado.' });
       }
 
       if (!rutinaID) {
         return res.status(400).json({ error: 'ID de rutina inválido' })
       }
 
-      const rutinaOcultada = await rutinaService.ocultarRutina(rutinaID, userID)
+      const rutinaOcultada = await rutinaService.ocultarRutina(rutinaID, usuario.ID)
 
       res.status(200).json({ message: 'Rutina ocultada correctamente', rutina: rutinaOcultada })
     } catch (error) {
@@ -144,6 +143,28 @@ class RutinaController {
       res.status(500).json({ error: 'No se pudo ocultar la rutina' })
     }
   }
+
+    async completarRutina(req, res) {
+    try {
+      const rutinaID = parseInt(req.params.id)
+      const usuario = await usuarioService.getUsuario();
+      if (!usuario || !usuario.ID) {
+        return res.status(401).json({ error: 'No autorizado. Usuario no identificado.' });
+      }
+
+      if (!rutinaID) {
+        return res.status(400).json({ error: 'ID de rutina inválido' })
+      }
+
+      const rutinaOcultada = await rutinaService.completarRutina(rutinaID, usuario.ID)
+
+      res.status(200).json({ message: 'Rutina ocultada correctamente', rutina: rutinaOcultada })
+    } catch (error) {
+      console.error('Error al ocultar rutina:', error)
+      res.status(500).json({ error: 'No se pudo ocultar la rutina' })
+    }
+  }
+
 
   async ocultarPaso(req, res) {
     const { id } = req.params
@@ -191,6 +212,16 @@ class RutinaController {
 }
 
 
+  async completarPaso(req, res) {
+    const { id } = req.params
+
+    try {
+      const paso = await PasoService.completarPaso(parseInt(id))
+      res.status(200).json(paso)
+    } catch (error) {
+      res.status(500).json({ mensaje: error.message })
+    }
+  }
 
 }
 

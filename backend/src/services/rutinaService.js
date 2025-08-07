@@ -132,17 +132,37 @@ class RutinaService {
   async cambiarEstadoRutina(rutinaID, estadoID) {
     if (!rutinaID || !estadoID) {
       throw new Error('Faltan datos obligatorios: rutinaID y estadoID');
-     }
+    }
     try {
       return await prisma.rutina.update({
         where: { ID: rutinaID },
         data: { estadoID }
       });
     } catch (error) {
-           console.error('Error al cambiar estado de rutina:', error);
+      console.error('Error al cambiar estado de rutina:', error);
       throw new Error('No se pudo cambiar el estado de la rutina');
-      }
     }
+  }
+
+  async completarRutina(rutinaID, userID) {
+    // Validar que la rutina exista y le pertenezca al usuario
+    const rutina = await prisma.rutina.findUnique({
+      where: { ID: rutinaID }
+    })
+
+    if (!rutina || rutina.usuarioID !== userID) {
+      throw new Error('Rutina no encontrada o no autorizada')
+    }
+
+    // Asumiendo que el estado "Oculta" tiene ID = 3
+    return prisma.rutina.update({
+      where: { ID: rutinaID },
+      data: {
+        estadoID: 2
+      }
+    })
+  }
+
 }
 
 

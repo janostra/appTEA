@@ -85,6 +85,22 @@ class PasoService {
     }
   }
 
+    async completarPaso(pasoId) {
+    try {
+      const pasoActualizado = await prisma.paso.update({
+        where: { ID: pasoId },
+        data: {
+          estadoID: 2
+        }
+      })
+
+      return pasoActualizado
+    } catch (error) {
+      console.error('Error al ocultar el paso:', error)
+      throw new Error('No se pudo ocultar el paso')
+    }
+  }
+
 }
 
 export default new PasoService()

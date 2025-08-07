@@ -111,10 +111,12 @@ const PerfilScreen = ({ route }) => {
           </>
         )}
       </View>
-
+          <>{rolID === 1 ? (
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>) : (null)}
+</>
+
 
       {/* MODAL DE PIN */}
       <Modal visible={mostrarModalPin} transparent animationType="fade">
@@ -128,7 +130,7 @@ const PerfilScreen = ({ route }) => {
               keyboardType="numeric"
               value={pinIngresado}
               onChangeText={setPinIngresado}
-            /> 
+            />
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
               <TouchableOpacity
                 style={[styles.saveButton, { flex: 1, marginRight: 8 }]}
@@ -269,7 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-    modalOverlay: {
+  modalOverlay: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',

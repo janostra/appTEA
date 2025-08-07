@@ -16,11 +16,13 @@ router.get('/', (req, res) =>
   RutinaController.obtenerRutinasPorUsuario(req, res)
 )
 
-router.patch('/:id/ocultar', protegerPorRol(1), RutinaController.ocultarRutina)
+router.patch('/:id/completar', RutinaController.completarRutina)
 
+router.patch('/:id/ocultar', protegerPorRol(1), RutinaController.ocultarRutina)
 
 router.patch('/pasos/:id/ocultar', protegerPorRol(1), RutinaController.ocultarPaso)
 
+router.patch('/pasos/:id/completar', RutinaController.completarPaso)
 
 router.patch('/:id/estado', protegerPorRol(1), RutinaController.cambiarEstadoRutina.bind(RutinaController));
 
