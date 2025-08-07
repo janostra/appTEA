@@ -33,17 +33,18 @@ const HomeScreenChildren = () => {
         }
     };
 
-    const pedirAyuda = () => {
-        Alert.alert('Ayuda', '¡Se ha solicitado ayuda!');
-    };
-
     const irAConfiguracion = () => {
         router.push('/perfil');
     };
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.configBoton} onPress={irAConfiguracion}>
+            <TouchableOpacity
+                style={styles.configBoton}
+                onPress={irAConfiguracion}
+                activeOpacity={0.8}
+                accessibilityLabel="Ir a configuración"
+            >
                 <Text style={styles.configTexto}>⚙️</Text>
             </TouchableOpacity>
 
@@ -70,10 +71,8 @@ const HomeScreenChildren = () => {
                     )}
                 </>
             )}
-
-            <TouchableOpacity style={styles.ayudaBoton} onPress={pedirAyuda}>
-                <Text style={styles.ayudaTexto}>Pedir ayuda</Text>
-            </TouchableOpacity>
+   
+            
 
             {/* Modal con detalle */}
             <Modal
@@ -103,10 +102,22 @@ const styles = StyleSheet.create({
         top: 40,
         right: 20,
         zIndex: 10,
-        padding: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        backgroundColor: '#fff',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#e6e6e6',
+        shadowColor: '#000',
+        shadowOpacity: 0.12,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 3 },
+        elevation: 3,
     },
     configTexto: {
-        fontSize: 24,
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#007BFF',
     },
     header: {
         fontSize: 28,

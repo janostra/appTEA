@@ -101,12 +101,11 @@ const PerfilScreen = ({ route }) => {
           <>
             <Text style={styles.infoText}>• Puedes ver tus rutinas activas</Text>
             <Text style={styles.infoText}>• Marca pasos como completados</Text>
-            <Text style={styles.infoText}>• Gana puntos por completar rutinas</Text>
           </>
         ) : (
           <>
             <Text style={styles.infoText}>• Crear rutinas para niños</Text>
-            <Text style={styles.infoText}>• Gestionar infantes</Text>
+            <Text style={styles.infoText}>• Gestionar estado de rutinas</Text>
             <Text style={styles.infoText}>• Crear recordatorios</Text>
           </>
         )}

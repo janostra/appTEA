@@ -17,8 +17,9 @@ export default function ListaRutinasScreen() {
   const [rutinas, setRutinas] = useState<Rutina[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'inactivas' | 'completadas'>('todas');
+  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'ocultas' | 'completadas' | 'canceladas'>('todas');
   const router = useRouter();
+  const goHome = () => router.replace('/app');
 
   useEffect(() => {
     fetchRutinas();
@@ -54,10 +55,22 @@ export default function ListaRutinasScreen() {
     }
   };
 
+  const cancelarRutina = async (id: number) => {
+    try {
+      setUpdatingId(id);
+      const nuevoEstadoID = 4; // cancelada
+      await api.patch(`/api/rutinas/${id}/estado`, { estadoID: nuevoEstadoID });
+      setRutinas(prev => prev.map(r => r.ID === id ? { ...r, estadoID: nuevoEstadoID } : r));
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const rutinasFiltradas = rutinas.filter((r) => {
     if (filtro === 'activas') return r.estadoID === 1;
     if (filtro === 'completadas') return r.estadoID === 2;
-    if (filtro === 'inactivas') return r.estadoID === 3;
+    if (filtro === 'ocultas') return r.estadoID === 3;
+    if (filtro === 'canceladas') return r.estadoID === 4;
     return true;
   });
 
@@ -67,28 +80,40 @@ export default function ListaRutinasScreen() {
       {item.fechaCreacion && (
         <Text style={styles.fecha}>Creada: {new Date(item.fechaCreacion).toLocaleDateString()}</Text>
       )}
-      <TouchableOpacity
+      <View style={styles.estadoRow}>
+        <TouchableOpacity
+          style={[styles.estadoButton, { backgroundColor: item.estadoID === 1 ? '#d9534f' : '#4CAF50' }]}
+          onPress={() => toggleEstado(item.ID, item.estadoID)}
+          disabled={updatingId === item.ID}
+        >
+          {updatingId === item.ID ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.estadoButtonText}>
+              {item.estadoID === 1 ? 'Ocultar ❌' : 'Activar ✅'}
+            </Text>
+          )}
+        </TouchableOpacity>
 
-        style={[styles.estadoButton, { backgroundColor: item.estadoID === 1 ? '#d9534f' : '#4CAF50' }]}
-        onPress={() => toggleEstado(item.ID, item.estadoID)}
-
-        disabled={updatingId === item.ID}
-      >
-        {updatingId === item.ID ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.estadoButtonText}>
-            {item.estadoID === 1 ? 'Ocultar ❌' : 'Activar ✅'}
-          </Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.estadoButton, { backgroundColor: '#FFC107', marginLeft: 8 }]}
+          onPress={() => cancelarRutina(item.ID)}
+          disabled={updatingId === item.ID}
+        >
+          {updatingId === item.ID ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.estadoButtonText}>Cancelar ⚠️</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.volver}>← Volver</Text>
+      <TouchableOpacity style={styles.volverButton} onPress={goHome}>
+        <Text style={styles.volverText}>← Volver al inicio</Text>
       </TouchableOpacity>
 
       <Text style={styles.title}>Rutinas creadas</Text>
@@ -108,16 +133,22 @@ export default function ListaRutinasScreen() {
           <Text style={[styles.filtroText, filtro === 'activas' && styles.filtroTextActivo]}>Activas</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.filtroButton, filtro === 'inactivas' && { backgroundColor: 'red' }]}
-          onPress={() => setFiltro('inactivas')}
+          style={[styles.filtroButton, filtro === 'ocultas' && { backgroundColor: 'red' }]}
+          onPress={() => setFiltro('ocultas')}
         >
-          <Text style={[styles.filtroText, filtro === 'inactivas' && styles.filtroTextActivo]}>Inactivas</Text>
+          <Text style={[styles.filtroText, filtro === 'ocultas' && styles.filtroTextActivo]}>Ocultas</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.filtroButton, filtro === 'completadas' && { backgroundColor: '#1976D2' }]}
           onPress={() => setFiltro('completadas')}
         >
           <Text style={[styles.filtroText, filtro === 'completadas' && styles.filtroTextActivo]}>Completadas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filtroButton, filtro === 'canceladas' && { backgroundColor: '#FFC107' }]}
+          onPress={() => setFiltro('canceladas')}
+        >
+          <Text style={[styles.filtroText, filtro === 'canceladas' && styles.filtroTextActivo]}>Canceladas</Text>
         </TouchableOpacity>
       </View>
 
@@ -146,7 +177,20 @@ export default function ListaRutinasScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, paddingTop: 60, backgroundColor: '#fff' },
-  volver: { fontSize: 16, color: '#007BFF', marginBottom: 10 },
+  volverButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#007BFF',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  volverText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
   filtroContainer: {
     flexDirection: 'row',
@@ -184,8 +228,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
+    flex: 1,
   },
   estadoButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  estadoRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+    gap: 8,
+  },
   emptyText: { textAlign: 'center', fontSize: 16, color: '#999', marginVertical: 20 },
   button: {
     backgroundColor: '#4CAF50',
