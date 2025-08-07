@@ -19,24 +19,48 @@ export default function ListaRutinasScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchRutinas = async () => {
-      try {
-      const res = await fetch('http://localhost:3000/api/rutinas');
-      
-      if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
-
-      const data = await res.json(); // 👈 ¡Acá está la magia!
-      console.log('Rutinas:', data);
-      setRutinas(data);
-      } catch (err) {
-        console.error('Error al obtener rutinas:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRutinas();
   }, []);
+
+  const fetchRutinas = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('http://localhost:3000/api/rutinas');
+      console.log('Rutinas recibidas:', res.data); // <-- AQUÍ
+      setRutinas(
+        res.data.map((r: any) => ({
+          ...r,
+          activa: r.estadoID === 1 || (r.estado && r.estado.nombre?.toLowerCase() === 'activa'),
+        }))
+      );
+    } catch (err) {
+      console.error('Error al obtener rutinas:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleEstado = async (id: number, estadoActual: boolean) => {
+    try {
+      setUpdatingId(id);
+      // Envía el nuevo estadoID al backend
+      const nuevoEstadoID = estadoActual ? 2 : 1;
+      await api.patch(`/api/rutinas/${id}/estado`, { estadoID: nuevoEstadoID });
+      setRutinas((prev) =>
+        prev.map((r) => (r.ID === id ? { ...r, activa: !estadoActual } : r))
+      );
+    } catch (err) {
+      console.error('Error cambiando estado de rutina:', err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const rutinasFiltradas = rutinas.filter((r) => {
+    if (filtro === 'activas') return r.activa;
+    if (filtro === 'inactivas') return !r.activa;
+    return true; // todas
+  });
 
   const renderItem = ({ item }: { item: Rutina }) => (
     <View style={styles.card}>
