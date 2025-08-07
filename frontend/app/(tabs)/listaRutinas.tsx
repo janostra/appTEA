@@ -8,14 +8,16 @@ interface Rutina {
   nombre: string;
   fechaCreacion?: string;
   imagen?: string;
+  estadoID: number;   // 1=activa, 2=completada, 3=inactiva/oculta, 4=cancelada
   activa: boolean;
+  completada: boolean;
 }
 
 export default function ListaRutinasScreen() {
   const [rutinas, setRutinas] = useState<Rutina[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'inactivas'>('todas');
+  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'inactivas' | 'completadas'>('todas');
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +33,7 @@ export default function ListaRutinasScreen() {
         res.data.map((r: any) => ({
           ...r,
           activa: r.estadoID === 1 || (r.estado && r.estado.nombre?.toLowerCase() === 'activa'),
+          completada: r.estadoID === 2 || r.estado?.nombre?.toLowerCase() === 'completada',
         }))
       );
     } catch (err) {
@@ -40,26 +43,22 @@ export default function ListaRutinasScreen() {
     }
   };
 
-  const toggleEstado = async (id: number, estadoActual: boolean) => {
+  const toggleEstado = async (id: number, estadoID: number) => {
     try {
       setUpdatingId(id);
-      // Envía el nuevo estadoID al backend
-      const nuevoEstadoID = estadoActual ? 2 : 1;
+      const nuevoEstadoID = estadoID === 1 ? 3 : 1;
       await api.patch(`/api/rutinas/${id}/estado`, { estadoID: nuevoEstadoID });
-      setRutinas((prev) =>
-        prev.map((r) => (r.ID === id ? { ...r, activa: !estadoActual } : r))
-      );
-    } catch (err) {
-      console.error('Error cambiando estado de rutina:', err);
+      setRutinas(prev => prev.map(r => r.ID === id ? { ...r, estadoID: nuevoEstadoID } : r));
     } finally {
       setUpdatingId(null);
     }
   };
 
   const rutinasFiltradas = rutinas.filter((r) => {
-    if (filtro === 'activas') return r.activa;
-    if (filtro === 'inactivas') return !r.activa;
-    return true; // todas
+    if (filtro === 'activas') return r.estadoID === 1;
+    if (filtro === 'completadas') return r.estadoID === 2;
+    if (filtro === 'inactivas') return r.estadoID === 3;
+    return true;
   });
 
   const renderItem = ({ item }: { item: Rutina }) => (
@@ -69,15 +68,15 @@ export default function ListaRutinasScreen() {
         <Text style={styles.fecha}>Creada: {new Date(item.fechaCreacion).toLocaleDateString()}</Text>
       )}
       <TouchableOpacity
-        style={[styles.estadoButton, { backgroundColor: item.activa ? '#4CAF50' : '#d9534f' }]}
-        onPress={() => toggleEstado(item.ID, item.activa)}
+        style={[styles.estadoButton, { backgroundColor: item.estadoID === 1 ? '#d9534f' : '#4CAF50' }]}
+        onPress={() => toggleEstado(item.ID, item.estadoID)}
         disabled={updatingId === item.ID}
       >
         {updatingId === item.ID ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.estadoButtonText}>
-            {item.activa ? 'Activa ✅' : 'Inactiva ❌'}
+            {item.estadoID === 1 ? 'Ocultar ❌' : 'Activar ✅'}
           </Text>
         )}
       </TouchableOpacity>
@@ -107,12 +106,19 @@ export default function ListaRutinasScreen() {
           <Text style={[styles.filtroText, filtro === 'activas' && styles.filtroTextActivo]}>Activas</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.filtroButton, filtro === 'inactivas' && styles.filtroActivo]}
+          style={[styles.filtroButton, filtro === 'inactivas' && { backgroundColor: 'red' }]}
           onPress={() => setFiltro('inactivas')}
         >
           <Text style={[styles.filtroText, filtro === 'inactivas' && styles.filtroTextActivo]}>Inactivas</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filtroButton, filtro === 'completadas' && { backgroundColor: '#1976D2' }]}
+          onPress={() => setFiltro('completadas')}
+        >
+          <Text style={[styles.filtroText, filtro === 'completadas' && styles.filtroTextActivo]}>Completadas</Text>
+        </TouchableOpacity>
       </View>
+
 
       {rutinasFiltradas.length === 0 && !loading && (
         <Text style={styles.emptyText}>No hay rutinas que coincidan con el filtro.</Text>
