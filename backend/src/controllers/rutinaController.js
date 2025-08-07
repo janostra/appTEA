@@ -156,6 +156,7 @@ class RutinaController {
     }
   }
 
+
   async cambiarEstadoRutina(req, res) {
     const { id } = req.params;
     const { estadoID } = req.body;
@@ -166,6 +167,29 @@ class RutinaController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  async obtenerRutinaById(req, res) {
+  try {
+    const rutinaID = parseInt(req.params.id, 10);
+    if (!rutinaID) {
+      return res.status(400).json({ error: 'ID de rutina inválido' });
+    }
+
+    // Supongamos que rutinaService tiene un método para obtener rutina por id
+    const rutina = await rutinaService.getRutinaPorId(rutinaID);
+    if (!rutina) {
+      return res.status(404).json({ error: 'Rutina no encontrada' });
+    }
+
+    return res.status(200).json({
+      rutina
+    });
+  } catch (error) {
+    console.error('Error al obtener rutina por ID:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
 
 
 }
