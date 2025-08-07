@@ -26,7 +26,13 @@ export default function ListaRutinasScreen() {
     try {
       setLoading(true);
       const res = await api.get('http://localhost:3000/api/rutinas');
-      setRutinas(res.data);
+      console.log('Rutinas recibidas:', res.data); // <-- AQUÍ
+      setRutinas(
+        res.data.map((r: any) => ({
+          ...r,
+          activa: r.estadoID === 1 || (r.estado && r.estado.nombre?.toLowerCase() === 'activa'),
+        }))
+      );
     } catch (err) {
       console.error('Error al obtener rutinas:', err);
     } finally {
@@ -37,7 +43,9 @@ export default function ListaRutinasScreen() {
   const toggleEstado = async (id: number, estadoActual: boolean) => {
     try {
       setUpdatingId(id);
-      await api.patch(`/rutinas/${id}/estado`, { activa: !estadoActual });
+      // Envía el nuevo estadoID al backend
+      const nuevoEstadoID = estadoActual ? 2 : 1;
+      await api.patch(`/api/rutinas/${id}/estado`, { estadoID: nuevoEstadoID });
       setRutinas((prev) =>
         prev.map((r) => (r.ID === id ? { ...r, activa: !estadoActual } : r))
       );

@@ -156,6 +156,18 @@ class RutinaController {
     }
   }
 
+  async cambiarEstadoRutina(req, res) {
+    const { id } = req.params;
+    const { estadoID } = req.body;
+    try {
+      const rutinaActualizada = await rutinaService.cambiarEstadoRutina(Number(id), estadoID);
+      res.json(rutinaActualizada);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+
 }
 
 export default new RutinaController()

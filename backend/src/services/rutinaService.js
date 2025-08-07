@@ -119,6 +119,22 @@ class RutinaService {
     })
   }
 
+  async cambiarEstadoRutina(rutinaID, estadoID) {
+    if (!rutinaID || !estadoID) {
+      throw new Error('Faltan datos obligatorios: rutinaID y estadoID');
+     }
+    try {
+      return await prisma.rutina.update({
+        where: { ID: rutinaID },
+        data: { estadoID }
+      });
+    } catch (error) {
+           console.error('Error al cambiar estado de rutina:', error);
+      throw new Error('No se pudo cambiar el estado de la rutina');
+      }
+    }
 }
+
+
 
 export default new RutinaService()

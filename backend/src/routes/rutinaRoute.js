@@ -21,5 +21,6 @@ router.patch('/:id/ocultar', protegerPorRol(1), RutinaController.ocultarRutina)
 
 router.patch('/pasos/:id/ocultar', protegerPorRol(1), RutinaController.ocultarPaso)
 
+router.patch('/:id/estado', protegerPorRol(1), RutinaController.cambiarEstadoRutina.bind(RutinaController));
 
 export default router
