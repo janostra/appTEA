@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import api from '../services/api';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -12,20 +12,6 @@ export default function LoginScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { login } = useAuth();
   const router = useRouter();
-  const [rolID, setRolID] = useState(null);
-
-  useEffect(() => {
-    const fetchRol = async () => {
-      try {
-        const response = await api.get('http://localhost:3000/api/usuarios/rol');
-        console.log(response.data.rolID)
-        setRolID(response.data.rolID);
-      } catch (error) {
-        console.error('Error al obtener rol:', error);
-      }
-    };
-    fetchRol();
-  }, []);
 
   const handleLogin = async () => {
     setErrorMessage(null);
@@ -38,31 +24,45 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/usuarios/autenticar-adulto`, {
+      // Autenticar usuario
+      const authResponse = await fetch(`${API_BASE_URL}/api/usuarios/autenticar-adulto`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin: parseInt(pin, 10) }),
       });
 
-      const data = await response.json();
+      const authData = await authResponse.json();
 
-      if (!response.ok) {
-        setErrorMessage(data?.message || 'PIN incorrecto');
+      if (!authResponse.ok) {
+        setErrorMessage(authData?.message || 'PIN incorrecto');
         setLoading(false);
         return;
       }
 
+      // Obtener rol del usuario
+      const rolResponse = await api.get(`${API_BASE_URL}/api/usuarios/rol`);
+      const userRolID = rolResponse.data.rolID;
+      console.log('Rol del usuario:', userRolID);
+
+      // Guardar datos del usuario
       const userData = {
-        id: data.adultoID.toString(),
-        name: data.nombre || 'Adulto',
-        role: 'adulto' as UserRole,
+        id: authData.adultoID.toString(),
+        name: authData.nombre || (userRolID === 2 ? 'Niño' : 'Adulto'),
+        role: userRolID === 2 ? 'niño' : 'adulto' as UserRole,
         email: '',
-        ID: data.adultoID,
+        ID: authData.adultoID,
       };
 
       await login(userData);
-      router.replace('/');
+      
+      //Redirigir según el rol
+      if (userRolID === 2) {
+        router.replace('/app'); // Vista de niño
+      } else {
+        router.replace('/'); // Vista de adulto
+      }
     } catch (error) {
+      console.error('Error en login:', error);
       setErrorMessage('Ocurrió un error al iniciar sesión');
     } finally {
       setLoading(false);
@@ -108,11 +108,9 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      {rolID === null && (
-        <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
-          <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
+        <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
+      </TouchableOpacity>
     </View>
   );
 }
