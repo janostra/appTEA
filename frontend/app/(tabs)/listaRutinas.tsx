@@ -69,7 +69,7 @@ export default function ListaRutinasScreen() {
         <Text style={styles.fecha}>Creada: {new Date(item.fechaCreacion).toLocaleDateString()}</Text>
       )}
       <TouchableOpacity
-        style={[styles.estadoButton, { backgroundColor: item.activa ? '#4CAF50' : '#d9534f' }]}
+        style={[styles.estadoButton, { backgroundColor: item.activa ? '#d9534f' : '#4CAF50' }]}
         onPress={() => toggleEstado(item.ID, item.activa)}
         disabled={updatingId === item.ID}
       >
@@ -77,7 +77,7 @@ export default function ListaRutinasScreen() {
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.estadoButtonText}>
-            {item.activa ? 'Activa ✅' : 'Inactiva ❌'}
+            {item.activa ? 'Ocultar ❌' : 'Activar ✅'}
           </Text>
         )}
       </TouchableOpacity>
