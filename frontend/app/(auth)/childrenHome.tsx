@@ -23,8 +23,9 @@ const HomeScreenChildren = () => {
         try {
             setLoading(true);
             const res = await api.get('http://localhost:3000/api/rutinas');
-            console.log(res.data)
-            setRutinas(res.data);
+            // Filtra solo las rutinas activas (estadoId === 1)
+            const rutinasActivas = res.data.filter((rutina: any) => rutina.estadoID === 1);
+            setRutinas(rutinasActivas);
         } catch (err) {
             console.error('Error al obtener rutinas:', err);
         } finally {
