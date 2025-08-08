@@ -16,6 +16,11 @@ router.get('/', (req, res) =>
   RutinaController.obtenerRutinasPorUsuario(req, res)
 )
 
+router.get('/', protegerPorRol(1), async (req, res) => {
+  const lista = await RecordatorioService.listarPorRutina(/* o por usuario */);
+  res.json({ recordatorios: lista });
+});
+
 router.patch('/:id/completar', RutinaController.completarRutina)
 
 router.patch('/:id/ocultar', protegerPorRol(1), RutinaController.ocultarRutina)
