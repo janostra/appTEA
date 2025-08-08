@@ -12,4 +12,7 @@ router.put('/:id', protegerPorRol(1),  (req, res) =>
   RecordatorioController.editarRecordatorio(req, res)
 )
 
+router.get('/', (req, res) =>
+  RecordatorioController.getRecordatorios(req, res))
+
 export default router

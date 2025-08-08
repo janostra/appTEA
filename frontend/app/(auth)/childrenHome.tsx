@@ -1,19 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Modal, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Modal } from 'react-native';
 import api from '../../services/api';
 import { RutinaDetalle } from './detalleRutina';
 import { useRouter } from 'expo-router';
+import { RecordatorioNotificador } from "./RecordatorioNotificador"
 
 type Rutina = {
     ID: number;
     nombre: string;
 };
 
+// type Recordatorio = { esto tampocp
+//   ID: number;
+//   descripcion: string;
+//   hora: string; // DateTime string
+//   diaSemana?: string;
+//   sonido?: string;
+//   color?: string;
+// }; hasta aca
+
 const HomeScreenChildren = () => {
     const [rutinas, setRutinas] = useState<Rutina[]>([]);
     const [loading, setLoading] = useState(true);
     const [rutinaSeleccionada, setRutinaSeleccionada] = useState<number | null>(null);
     const router = useRouter();
+    // const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]); aca tampoco
+
+useEffect(() => { //este use effect no va
+  const obtenerRecordatorios = async () => {
+    try {
+      const res = await api.get('http://localhost:3000/api/recordatorios');
+    //   setRecordatorios(res.data.recordatorios);
+      console.log("frontend", res.data.recordatorios)
+    } catch (error) {
+      console.error('Error al obtener recordatorios:', error);
+    }
+  };
+
+  obtenerRecordatorios();
+
+ 
+  });//hasta aca
 
     useEffect(() => {
         fetchRutinas();
@@ -47,6 +74,8 @@ const HomeScreenChildren = () => {
             >
                 <Text style={styles.configTexto}>⚙️</Text>
             </TouchableOpacity>
+
+            <RecordatorioNotificador/>
 
             <Text style={styles.header}>👦 Mis Rutinas</Text>
 

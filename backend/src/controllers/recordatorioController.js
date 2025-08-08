@@ -1,4 +1,7 @@
-import  RecordatorioService  from '../services/recordatorioService.js'
+import RecordatorioService from '../services/recordatorioService.js'
+import { UsuarioService } from '../services/usuarioService.js'
+const usuarioService = new UsuarioService();
+
 
 class RecordatorioController {
 
@@ -76,7 +79,19 @@ class RecordatorioController {
       return res.status(500).json({ error: 'Error interno del servidor' })
     }
   }
-  
+
+  async getRecordatorios(req, res) {
+    try {
+      const recordatorios = await RecordatorioService.obtenerRecordatorios()
+
+      console.log("backend", recordatorios)
+      res.json(recordatorios);
+    } catch (error) {
+      console.error('Error en obtenerRutinasPorUsuario:', error);
+      res.status(500).json({ error: 'No se pudieron obtener las rutinas' });
+    }
+  }
+
 }
 
 export default new RecordatorioController()

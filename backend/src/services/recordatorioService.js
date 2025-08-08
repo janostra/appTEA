@@ -103,6 +103,21 @@ export class RecordatorioService {
       throw new Error('No se pudo editar el recordatorio')
     }
   }
+
+ async  obtenerRecordatorios() {
+  try {
+    const recordatorios = await prisma.recordatorio.findMany({
+      include: {
+        frecuencia: true
+      },
+    });
+
+    return recordatorios;
+  } catch (error) {
+    console.error('Error al obtener los recordatorios:', error);
+    throw new Error('No se pudieron obtener los recordatorios');
+  }
+}
 }
 
 export default new RecordatorioService()
