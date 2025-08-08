@@ -2,14 +2,15 @@ import { useState } from 'react';
 import api from '../services/api';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../context/AuthContext';
+import { useAuth, UserRole } from '../context/AuthContext';
+
 import { API_BASE_URL } from '../config';
 
 export default function LoginScreen() {
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [rolId, setRolId] = useState(null)
   const { login } = useAuth();
   const router = useRouter();
 
@@ -40,9 +41,10 @@ export default function LoginScreen() {
       }
 
       // Obtener rol del usuario
-      const rolResponse = await api.get(`${API_BASE_URL}/api/usuarios/rol`);
+      const rolResponse = await api.get(`http://localhost:3000/api/usuarios/rol`);
       const userRolID = rolResponse.data.rolID;
       console.log('Rol del usuario:', userRolID);
+      setRolId(userRolID);
 
       // Guardar datos del usuario
       const userData = {
@@ -54,12 +56,10 @@ export default function LoginScreen() {
       };
 
       await login(userData);
-      
+
       //Redirigir según el rol
-      if (userRolID === 2) {
+      if (userRolID) {
         router.replace('/app'); // Vista de niño
-      } else {
-        router.replace('/'); // Vista de adulto
       }
     } catch (error) {
       console.error('Error en login:', error);
@@ -107,10 +107,10 @@ export default function LoginScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
-        <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
-      </TouchableOpacity>
+      {rolId ?
+        <TouchableOpacity style={styles.registerButton} onPress={goToRegister}>
+          <Text style={styles.registerText}>¿No tenés cuenta? Registrarse</Text>
+        </TouchableOpacity> : (null)}
     </View>
   );
 }

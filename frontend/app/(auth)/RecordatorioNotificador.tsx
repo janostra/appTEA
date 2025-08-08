@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Vibration, Platform } from 'react-native';
 import api from '../../services/api';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+import RecordatorioActivo from './RecordatorioActivo';
 
 
 type Recordatorio = {
@@ -18,7 +16,7 @@ export const RecordatorioNotificador = () => {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const recordatoriosRef = useRef<Recordatorio[]>([]);
   const notifiedRef = useRef<Set<string>>(new Set());
-
+  const [recordatorioActivo, setRecordatorioActivo] = useState<Recordatorio | null>(null);
   // Mantener referencia actualizada sin re-crear intervalos
   useEffect(() => {
     recordatoriosRef.current = recordatorios;
@@ -63,26 +61,15 @@ export const RecordatorioNotificador = () => {
 
         const esMismoDia =
           !rec.diaSemana || rec.diaSemana.toLowerCase() === diaActual;
-        
+
         // LOG DE DEPURACIÓN (aquí)
-        console.log('check', {
-          desc: rec.descripcion,
-          ahora: `${ahora.getHours()}:${ahora.getMinutes()}`,
-          recHora: `${horaRecordatorio.getHours()}:${horaRecordatorio.getMinutes()}`,
-          diaActual,
-          diaRec: rec.diaSemana,
-          esMismoMinuto,
-          esMismoDia,
-        });
-        /*
-        if (esMismoMinuto && esMismoDia) {
-          const key = `${rec.ID}-${ahora.getFullYear()}${ahora.getMonth()}${ahora.getDate()}-${ahora.getHours()}${ahora.getMinutes()}`;
-          if (!notifiedRef.current.has(key)) {
-            notifiedRef.current.add(key);
-            lanzarNotificacion(rec);
-          }
+        const key = `${rec.ID}-${ahora.toDateString()}-${ahora.getHours()}${ahora.getMinutes()}`;
+
+        if (esMismoMinuto && esMismoDia && !notifiedRef.current.has(key)) {
+          notifiedRef.current.add(key);
+          setRecordatorioActivo(rec); // Monta el componente
         }
-          */
+
       });
     };
 
@@ -93,26 +80,20 @@ export const RecordatorioNotificador = () => {
     return () => clearInterval(intervalo);
   }, []);
 
+  return (
 
-  const lanzarNotificacion = async (recordatorio: Recordatorio) => {
-    if (Platform.OS === 'web') {
-      Alert.alert('Recordatorio', recordatorio.descripcion); // fallback web
-      console.log('DISPARO NOTIF', recordatorio.descripcion);
-      return;
-    }
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: '⏰ Recordatorio',
-        body: recordatorio.descripcion,
-        sound: recordatorio.sonido || 'default',
-        color: recordatorio.color || undefined,
-      },
-      trigger: null,
-    });
-    Vibration.vibrate(500);
-  };
-
-  return null; // no muestra nada visual
+    <>
+      {recordatorioActivo && (
+        <RecordatorioActivo
+          descripcion={recordatorioActivo.descripcion}
+          hora={recordatorioActivo.hora}
+          diaSemana={recordatorioActivo.diaSemana}
+          sonido={recordatorioActivo?.sonido}
+          color={recordatorioActivo?.color}
+          onCerrar={() => setRecordatorioActivo(null)}
+        />
+      )}
+    </>)
 };
 
 export default RecordatorioNotificador;
